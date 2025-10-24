@@ -34,13 +34,6 @@ class Pet extends Model
     // Relasi ke jenis_hewan melalui ras_hewan
     public function jenisHewan()
     {
-        return $this->hasOneThrough(
-            JenisHewan::class,
-            RasHewan::class,
-            'idras_hewan', // Foreign key on ras_hewan table
-            'idjenis_hewan', // Foreign key on jenis_hewan table
-            'idras_hewan', // Local key on pet table
-            'idjenis_hewan' // Local key on ras_hewan table
-        );
+        return $this->belongsTo(JenisHewan::class, 'idjenis_hewan', 'idjenis_hewan');
     }
 }
