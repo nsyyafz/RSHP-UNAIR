@@ -54,13 +54,24 @@ class User extends Authenticatable
         return $this->hasOne(Pemilik::class, 'iduser', 'iduser');
     }
 
-    public function roles()
+    public function roleUser()
     {
-        return $this->belongsToMany(
-            Role::class,      // Model yang dihubungkan
-            'role_user',      // Nama tabel pivot
-            'iduser',         // Foreign key di tabel pivot untuk user
-            'idrole'          // Foreign key di tabel pivot untuk role
-        );
+        return $this->hasMany(RoleUser::class, 'iduser', 'iduser');
     }
+
+    public function role()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'iduser', 'idrole')
+                    ->using(RoleUser::class);
+    }
+
+    // public function roles()
+    // {
+    //     return $this->belongsToMany(
+    //         Role::class,      // Model yang dihubungkan
+    //         'role_user',      // Nama tabel pivot
+    //         'iduser',         // Foreign key di tabel pivot untuk user
+    //         'idrole'          // Foreign key di tabel pivot untuk role
+    //     );
+    // }
 }

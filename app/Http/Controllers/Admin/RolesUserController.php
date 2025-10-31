@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\User;
+use App\Models\RoleUser;
 
-class UserController extends Controller
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+class RolesUserController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        // $users = User::with('roles')->get();
-        // return view('admin.user.index', compact('users'));
+        $roleUser = User::with('role')->get();
+        // dd($roleUser);
+        return view('admin.user.index', compact('roleUser'));
     }
 
     /**

@@ -11,8 +11,9 @@ class Role extends Model
     protected $fillable = ['nama_role'];
 
     // Relasi ke tabel user
-    public function user()
+   public function user()
     {
-        return $this->hasMany(User::class, 'idrole', 'idrole');
+        return $this->belongsToMany(User::class, 'role_user', 'idrole', 'iduser')
+                    ->using(RoleUser::class);
     }
 }

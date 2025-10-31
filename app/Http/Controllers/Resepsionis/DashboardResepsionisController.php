@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Resepsionis;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\User;
-
-class UserController extends Controller
+class DashboardResepsionisController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        // $users = User::with('roles')->get();
-        // return view('admin.user.index', compact('users'));
+        //
     }
 
     /**

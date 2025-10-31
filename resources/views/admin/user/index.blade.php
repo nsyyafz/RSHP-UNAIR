@@ -269,7 +269,7 @@
         <div class="stats-card">
             <div class="stats-icon">📊</div>
             <div class="stats-content">
-                <h3>{{ $users->count() }}</h3>
+                <h3>{{ $roleUser->count() }}</h3>
                 <p>Total User Terdaftar</p>
             </div>
         </div>
@@ -291,26 +291,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($users as $index => $user)
+                        @forelse($roleUser as $index => $userRole)
                         <tr>
                             <td>
                                 <span class="number-badge">{{ $index + 1 }}</span>
                             </td>
                             <td>
-                                <span class="id-badge">{{ $user->iduser }}</span>
+                                <span class="id-badge">{{ $userRole->iduser }}</span>
                             </td>
                             <td>
-                                <strong style="color: #003366;">{{ $user->nama }}</strong>
+                                <strong style="color: #003366;">{{ $userRole->nama }}</strong>
                             </td>
-                            <td>{{ $user->email }}</td>
+                            <td>{{ $userRole->email }}</td>
                             <td>
-                                @if($user->roles->isNotEmpty())
-                                    @foreach($user->roles as $role)
+                                    @foreach($userRole->role as $role)
                                         <span class="badge-role">{{ $role->nama_role }}</span>
                                     @endforeach
-                                @else
                                     <span class="text-muted">-</span>
-                                @endif
                             </td>
                         </tr>
                         @empty

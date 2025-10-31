@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\User;
-
-class UserController extends Controller
+class DashboardAdminController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        // $users = User::with('roles')->get();
-        // return view('admin.user.index', compact('users'));
+        return view('admin.dashboard_admin');
     }
 
     /**
