@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Resepsionis;
+namespace App\Http\Controllers\Dokter;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class DashboardResepsionisController extends Controller
+class DashboardDokterController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('resepsionis.dashboard_resepsionis');
+        return view('dokter.dashboard_dokter');
     }
 
     /**

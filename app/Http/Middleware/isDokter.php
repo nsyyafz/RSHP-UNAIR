@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class isResepsionis
+class isDokter
 {
     /**
      * Handle an incoming request.
@@ -26,8 +26,8 @@ class isResepsionis
         // Ambil role dari session atau dari relasi user
         $userRole = session('user_role');
 
-        // Jika user terautentikasi tapi role  4, return 403
-        if ($userRole === 4) {
+        // Jika user terautentikasi tapi role  2, return 403
+        if ($userRole === 2) {
 
             return $next($request);
         } else {

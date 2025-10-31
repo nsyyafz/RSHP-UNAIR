@@ -13,6 +13,10 @@ use App\Http\Controllers\Admin\JenisHewanController;
 use App\Http\Controllers\Admin\KodeTindakanController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\Admin\KategoriKlinisController;
+use App\Http\Controllers\Dokter\DashboardDokterController;
+use App\Http\Controllers\Pemilik\DashboardPemilikController;
+use App\Http\Controllers\Perawat\DashboardPerawatController;
+use App\Http\Controllers\Resepsionis\DashboardResepsionisController;
 
 Route::get('/cek-koneksi', [SiteController::class, 'cekKoneksi'])->name('cek-koneksi');
 Route::get('/', [SiteController::class, 'home'])->name('home');
@@ -38,4 +42,35 @@ Route::middleware('isAdministrator')->group(function () {
     });
 });
 
+Route::middleware('isResepsionis')->group(function () {
+    Route::prefix('resepsionis')->group(function () {
+    Route::get('/dashboard', [DashboardResepsionisController::class, 'index'])->name('resepsionis.dashboard');
+    Route::get('/jenis-hewan', [JenisHewanController::class, 'index'])->name('resepsionis.jenis-hewan');
+    Route::get('/pet', [PetController::class, 'index'])->name('resepsionis.pet');
+    Route::get('/pemilik', [PemilikController::class, 'index'])->name('resepsionis.pemilik');
+    Route::get('/ras-hewan', [RasHewanController::class, 'index'])->name('resepsionis.ras-hewan');
+    });
+});
+
+Route::middleware('isDokter')->group(function () {
+    Route::prefix('dokter')->group(function () {
+    Route::get('/dashboard', [DashboardDokterController::class, 'index'])->name('dokter.dashboard');
+    });
+});
+
+Route::middleware('isPerawat')->group(function () {
+    Route::prefix('perawat')->group(function () {
+    Route::get('/dashboard', [DashboardPerawatController::class, 'index'])->name('perawat.dashboard');
+    Route::get('/kategori', [KategoriController::class, 'index'])->name('perawat.kategori');
+    Route::get('/kategori-klinis', [KategoriKlinisController::class, 'index'])->name('perawat.kategori-klinis');
+    Route::get('/kode-tindakan', [KodeTindakanController::class, 'index'])->name('perawat.kode-tindakan');
+    });
+});
+
+Route::middleware('isPemilik')->group(function () {
+    Route::prefix('pemilik')->group(function () {
+    Route::get('/dashboard', [DashboardPemilikController::class, 'index'])->name('pemilik.dashboard');
+    
+    });
+});
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

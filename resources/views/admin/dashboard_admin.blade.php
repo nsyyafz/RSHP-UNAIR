@@ -312,53 +312,6 @@
             <i class="bi bi-people"></i> Kelola Pemilik
         </a>
     </section>
-
-    <!-- Tabel Aktivitas -->
-    <section class="container pb-5">
-        <div class="card activity-card">
-            <div class="card-header">
-                🕒 Aktivitas Terbaru
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th style="width: 80px;">No</th>
-                                <th>Aktivitas</th>
-                                <th style="width: 200px;">Status</th>
-                                <th style="width: 200px;">Tanggal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($aktivitas ?? [] as $index => $item)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $item->deskripsi ?? '-' }}</td>
-                                <td>
-                                    <span class="badge badge-activity badge-{{ $item->status ?? 'primary' }}">
-                                        {{ $item->status_label ?? 'Baru' }}
-                                    </span>
-                                </td>
-                                <td>{{ $item->created_at ?? now()->format('d M Y H:i') }}</td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="text-center py-5">
-                                    <div style="opacity: 0.5;">
-                                        <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                                        <p class="mt-3 mb-0">Belum ada aktivitas</p>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
