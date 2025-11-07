@@ -2,8 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\Pet;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\Pemilik;
+use App\Models\RasHewan;
+use App\Models\JenisHewan;
+use App\Models\RekamMedis;
+use App\Models\KodeTindakan;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class DashboardAdminController extends Controller
 {
@@ -12,8 +20,17 @@ class DashboardAdminController extends Controller
      */
     public function index()
     {
-        return view('admin.dashboard_admin');
-    }
+    return view('admin.dashboard_admin', [
+        'jumlahPet' => Pet::count(),
+        'jumlahPemilik' => Pemilik::count(),
+        'jumlahJenis' => JenisHewan::count(),
+        'jumlahRekam' => RekamMedis::count(),
+        'jumlahRas' => RasHewan::count(),
+        'jumlahUser' => User::count(),
+        'jumlahRole' => Role::count(),
+        'jumlahTindakan' => KodeTindakan::count(),
+    ]);
+    }   
 
     /**
      * Show the form for creating a new resource.

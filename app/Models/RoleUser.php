@@ -12,6 +12,9 @@ class RoleUser extends Pivot
     
     protected $fillable = ['iduser', 'idrole'];
 
+    // mematikan created_at dan updated_at
+    public $timestamps = false;
+    
     public function user()
     {
         return $this->belongsTo(User::class, 'iduser', 'iduser');

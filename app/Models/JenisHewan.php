@@ -8,6 +8,9 @@ class JenisHewan extends Model
 {
     protected $table = 'jenis_hewan'; 
     protected $primaryKey = 'idjenis_hewan';
-    public $timestamps = false;
     protected $fillable = ['nama_jenis_hewan']; 
+
+    // mematikan created_at dan updated_at
+    public $timestamps = false;
+
 }

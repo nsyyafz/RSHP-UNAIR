@@ -13,6 +13,9 @@ class RasHewan extends Model
         'nama_ras',
         'idjenis_hewan'
     ];
+
+    // mematikan created_at dan updated_at
+    public $timestamps = false;
     
     // Relasi ke tabel jenis_hewan
     public function jenisHewan()

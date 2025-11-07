@@ -10,6 +10,9 @@ class Role extends Model
     protected $primaryKey = 'idrole';
     protected $fillable = ['nama_role'];
 
+    // mematikan created_at dan updated_at
+    public $timestamps = false;
+    
     // Relasi ke tabel user
    public function user()
     {

@@ -13,6 +13,70 @@
             min-height: 100vh;
         }
 
+        /* Navbar Styles */
+        .navbar-custom {
+            background: linear-gradient(135deg, #003366 0%, #005599 100%);
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);
+            padding: 1rem 0;
+        }
+        
+        .navbar-custom .navbar-brand {
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-custom .navbar-brand:hover {
+            color: #ffd700;
+            transform: scale(1.05);
+        }
+        
+        .navbar-custom .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+        }
+        
+        .navbar-custom .nav-link:hover {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .navbar-custom .dropdown-menu {
+            background: white;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0, 51, 102, 0.2);
+            border-radius: 10px;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+        
+        .navbar-custom .dropdown-item {
+            color: #003366;
+            padding: 0.7rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-custom .dropdown-item:hover {
+            background: linear-gradient(90deg, rgba(0, 51, 102, 0.1) 0%, transparent 100%);
+            color: #005599;
+            padding-left: 2rem;
+        }
+        
+        .navbar-custom .dropdown-item i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .navbar-custom .dropdown-toggle::after {
+            margin-left: 0.5rem;
+        }
+
         /* Hero Section */
         .hero-admin {
             background: linear-gradient(135deg, #003366 0%, #005599 70%, #ffd700 100%);
@@ -108,111 +172,6 @@
             display: block;
         }
 
-        /* Activity Table Card */
-        .activity-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.1);
-            border: none;
-            overflow: hidden;
-        }
-        
-        .activity-card .card-header {
-            background: linear-gradient(135deg, #003366 0%, #005599 100%);
-            color: white;
-            font-weight: 700;
-            font-size: 1.3rem;
-            padding: 1.5rem;
-            border: none;
-        }
-        
-        .activity-card .card-body {
-            padding: 2rem;
-        }
-        
-        .table {
-            margin-bottom: 0;
-        }
-        
-        .table thead th {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            color: #003366;
-            font-weight: 700;
-            border: none;
-            padding: 1rem;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-        }
-        
-        .table tbody tr {
-            transition: all 0.3s ease;
-        }
-        
-        .table tbody tr:hover {
-            background: linear-gradient(90deg, rgba(0, 51, 102, 0.05) 0%, transparent 100%);
-            transform: translateX(5px);
-        }
-        
-        .table tbody td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .badge-activity {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        
-        .badge-primary {
-            background: linear-gradient(90deg, #003366, #005599);
-        }
-        
-        .badge-success {
-            background: linear-gradient(90deg, #28a745, #20c997);
-        }
-        
-        .badge-warning {
-            background: linear-gradient(90deg, #ffd700, #ffed4e);
-            color: #003366;
-        }
-        
-        .badge-info {
-            background: linear-gradient(90deg, #17a2b8, #138496);
-        }
-
-        /* Quick Actions */
-        .quick-actions {
-            margin: 2rem 0;
-        }
-        
-        .action-btn {
-            background: white;
-            border: 2px solid #003366;
-            color: #003366;
-            font-weight: 600;
-            padding: 1rem 2rem;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            margin: 0.5rem;
-        }
-        
-        .action-btn:hover {
-            background: linear-gradient(90deg, #003366, #005599);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);
-        }
-        
-        .action-btn i {
-            margin-right: 0.5rem;
-        }
-
         /* Responsive */
         @media (max-width: 991.98px) {
             .hero-admin h1 {
@@ -221,11 +180,6 @@
             
             .stat-card {
                 margin-bottom: 1rem;
-            }
-            
-            .action-btn {
-                width: 100%;
-                margin: 0.5rem 0;
             }
         }
 
@@ -252,8 +206,85 @@
     </style>
 </head>
 <body>
-    <!-- Include Navbar -->
-    @include('admin.partials.navbar')
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
+                <i class="bi bi-heart-pulse-fill"></i> RSHP Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.dashboard') }}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    
+                    <!-- Dropdown Data Master -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-database"></i> Data Master
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('jenis-hewan.index') }}">
+                                <i class="bi bi-list-ul"></i> Jenis Hewan
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ route('ras-hewan.index') }}">
+                                <i class="bi bi-tag"></i> Ras Hewan
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ route('kategori.index') }}">
+                                <i class="bi bi-folder"></i> Kategori
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ route('kategori-klinis.index') }}">
+                                <i class="bi bi-clipboard-pulse"></i> Kategori Klinis
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ route('kode-tindakan.index') }}">
+                                <i class="bi bi-file-medical"></i> Kode Tindakan
+                            </a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Dropdown Manajemen -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-gear"></i> Manajemen
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('pet.index') }}">
+                                <i class="bi bi-heart"></i> Data Pet
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ route('pemilik.index') }}">
+                                <i class="bi bi-people"></i> Data Pemilik
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('user.index') }}">
+                                <i class="bi bi-person-badge"></i> Data User
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ route('role.index') }}">
+                                <i class="bi bi-shield-check"></i> Data Role
+                            </a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Logout -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('logout') }}"
+                                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                        {{ __('Logout') }}
+                                    </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hero-admin">
@@ -272,46 +303,65 @@
     <!-- Statistik Section -->
     <section class="container mb-5">
         <div class="row g-4">
-            <div class="col-md-3 col-sm-6">
+            <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="stat-card">
                     <div class="stat-icon">🐶</div>
                     <div class="stat-title">Jumlah Hewan</div>
                     <span class="stat-number">{{ $jumlahPet ?? 0 }}</span>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6">
+            <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="stat-card">
                     <div class="stat-icon">👥</div>
                     <div class="stat-title">Jumlah Pemilik</div>
                     <span class="stat-number">{{ $jumlahPemilik ?? 0 }}</span>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6">
+            <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="stat-card">
                     <div class="stat-icon">📋</div>
                     <div class="stat-title">Jenis Hewan</div>
                     <span class="stat-number">{{ $jumlahJenis ?? 0 }}</span>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6">
+            <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="stat-card">
                     <div class="stat-icon">🩺</div>
                     <div class="stat-title">Rekam Medis</div>
                     <span class="stat-number">{{ $jumlahRekam ?? 0 }}</span>
                 </div>
             </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon">🏷️</div>
+                    <div class="stat-title">Ras Hewan</div>
+                    <span class="stat-number">{{ $jumlahRas ?? 0 }}</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍💼</div>
+                    <div class="stat-title">Jumlah User</div>
+                    <span class="stat-number">{{ $jumlahUser ?? 0 }}</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon">🛡️</div>
+                    <div class="stat-title">Jumlah Role</div>
+                    <span class="stat-number">{{ $jumlahRole ?? 0 }}</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon">💉</div>
+                    <div class="stat-title">Kode Tindakan</div>
+                    <span class="stat-number">{{ $jumlahTindakan ?? 0 }}</span>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Quick Actions -->
-    <section class="container quick-actions text-center">
-        <a href="{{ route('jenis-hewan') }}" class="action-btn">
-            <i class="bi bi-list-ul"></i> Kelola Jenis Hewan
-        </a>
-        <a href="{{ route('pemilik') }}" class="action-btn">
-            <i class="bi bi-people"></i> Kelola Pemilik
-        </a>
-    </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

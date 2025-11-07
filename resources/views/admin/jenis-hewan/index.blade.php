@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Jenis Hewan - Admin RSHP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         * {
             margin: 0;
@@ -90,6 +91,11 @@
             background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
             padding: 1.5rem 2rem;
             border-bottom: 3px solid #ffd700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .card-header-custom h5 {
@@ -97,6 +103,71 @@
             font-weight: 700;
             margin: 0;
             font-size: 1.3rem;
+        }
+
+        /* Add Button */
+        .btn-add {
+            background: linear-gradient(135deg, #003366, #005599);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #005599, #003366);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.3);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #ffc107, #ffb300);
+            color: #003366;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #ffb300, #ffc107);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+            color: #003366;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #c82333, #dc3545);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         /* Table Styling */
@@ -232,6 +303,15 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -244,8 +324,8 @@
                     <h1>🐾 Daftar Jenis Hewan</h1>
                     <p>Kelola data jenis hewan di RSHP Universitas Airlangga</p>
                 </div>
-                <a href="/admin/dashboard" class="btn-back">
-                    ← Kembali ke Dashboard
+                <a href="{{ route('admin.dashboard') }}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
                 </a>
             </div>
         </div>
@@ -262,15 +342,19 @@
         <!-- Data Table Card -->
         <div class="data-card">
             <div class="card-header-custom">
-                <h5>📋 Data Jenis Hewan</h5>
+                <h5><i class="bi bi-list-ul"></i> Data Jenis Hewan</h5>
+                <a href="{{ route('jenis-hewan.create') }}" class="btn-add">
+                    <i class="bi bi-plus-circle"></i> Tambah Jenis Hewan
+                </a>
             </div>
             
             <div class="table-container">
                 <table class="table custom-table">
                     <thead>
                         <tr>
-                            <th style="width: 120px;">ID</th>
+                            <th style="width: 100px;">ID</th>
                             <th>Nama Jenis Hewan</th>
+                            <th style="width: 200px;" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -282,10 +366,24 @@
                             <td>
                                 <strong style="color: #003366;">{{ $item->nama_jenis_hewan }}</strong>
                             </td>
+                            <td>
+                                <div class="action-buttons justify-content-center">
+                                    <a href="{{ route('jenis-hewan.edit', $item->idjenis_hewan) }}" class="btn-action btn-edit">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <form action="{{ route('jenis-hewan.destroy', $item->idjenis_hewan) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-action btn-delete">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="2" class="empty-state">
+                            <td colspan="3" class="empty-state">
                                 <div class="empty-state-icon">🔍</div>
                                 <p>Tidak ada data jenis hewan yang tersedia</p>
                             </td>

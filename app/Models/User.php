@@ -25,6 +25,9 @@ class User extends Authenticatable
         'password',
     ];
 
+    // mematikan created_at dan updated_at
+    public $timestamps = false;
+
     /**
      * The attributes that should be hidden for serialization.
      *
