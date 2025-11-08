@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Pet extends Model
 {
     protected $table = 'pet';
     protected $primaryKey = 'idpet';
     public $timestamps = false;
-    
+
     protected $fillable = [
         'nama',
         'tanggal_lahir',
@@ -18,22 +19,41 @@ class Pet extends Model
         'idpemilik',
         'idras_hewan'
     ];
-    
-    // Relasi ke tabel pemilik
+
+    // Relasi
     public function pemilik()
     {
         return $this->belongsTo(Pemilik::class, 'idpemilik', 'idpemilik');
     }
-    
-    // Relasi ke tabel ras_hewan
+
     public function rasHewan()
     {
         return $this->belongsTo(RasHewan::class, 'idras_hewan', 'idras_hewan');
     }
-    
-    // Relasi ke jenis_hewan melalui ras_hewan
-    public function jenisHewan()
+
+    // Accessor untuk menampilkan jenis kelamin dalam teks penuh
+    public function getJenisKelaminTextAttribute()
     {
-        return $this->belongsTo(JenisHewan::class, 'idjenis_hewan', 'idjenis_hewan');
+        return $this->jenis_kelamin === 'J' ? 'Jantan' : 'Betina';
+    }
+
+      // Accessor untuk menghitung umur
+    public function getUmurAttribute()
+    {
+        if (!$this->tanggal_lahir) {
+            return null;
+        }
+        
+        $lahir = new \DateTime($this->tanggal_lahir);
+        $sekarang = new \DateTime();
+        $umur = $lahir->diff($sekarang);
+        
+        if ($umur->y > 0) {
+            return $umur->y . ' tahun ' . $umur->m . ' bulan';
+        } elseif ($umur->m > 0) {
+            return $umur->m . ' bulan';
+        } else {
+            return $umur->d . ' hari';
+        }
     }
 }

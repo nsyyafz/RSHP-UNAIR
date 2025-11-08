@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kode Tindakan Terapi - Admin RSHP</title>
+    <title>Manajemen Kode Tindakan Terapi - Admin RSHP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         * {
             margin: 0;
@@ -19,6 +20,7 @@
             padding: 2rem 0;
         }
 
+        /* Header Section */
         .page-header {
             background: linear-gradient(135deg, #003366 0%, #005599 100%);
             color: white;
@@ -31,7 +33,7 @@
         }
 
         .page-header::before {
-            content: '🏥';
+            content: '📋';
             position: absolute;
             font-size: 10rem;
             opacity: 0.1;
@@ -54,6 +56,7 @@
             z-index: 1;
         }
 
+        /* Back Button */
         .btn-back {
             background: white;
             color: #003366;
@@ -75,6 +78,209 @@
             box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
 
+        /* Card */
+        .data-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 51, 102, 0.08);
+            overflow: hidden;
+            border: none;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 3px solid #ffd700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header-custom h5 {
+            color: #003366;
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        /* Add Button */
+        .btn-add {
+            background: linear-gradient(135deg, #003366, #005599);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #005599, #003366);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.3);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #ffc107, #ffb300);
+            color: #003366;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #ffb300, #ffc107);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+            color: #003366;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #c82333, #dc3545);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Table Styling */
+        .table-container {
+            padding: 0;
+            overflow-x: auto;
+        }
+
+        .custom-table {
+            margin: 0;
+            width: 100%;
+        }
+
+        .custom-table thead {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        }
+
+        .custom-table thead th {
+            color: #003366;
+            font-weight: 700;
+            padding: 1rem 1.5rem;
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.8px;
+        }
+
+        .custom-table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .custom-table tbody tr:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+            transform: scale(1.01);
+            box-shadow: 0 3px 10px rgba(0, 51, 102, 0.1);
+        }
+
+        .custom-table tbody td {
+            padding: 1.2rem 1.5rem;
+            color: #555;
+            vertical-align: middle;
+        }
+
+        .custom-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        /* Number Badge */
+        .number-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #003366;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Kode Badge */
+        .kode-badge {
+            background: linear-gradient(135deg, #003366, #005599);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            display: inline-block;
+        }
+
+        /* Kategori Badge */
+        .kategori-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 0.2rem;
+        }
+
+        .badge-kategori {
+            background: linear-gradient(135deg, #17a2b8, #20c997);
+            color: white;
+        }
+
+        .badge-klinis {
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Stats Cards */
         .stats-card {
             background: white;
             border-radius: 15px;
@@ -112,156 +318,31 @@
             font-size: 0.9rem;
         }
 
-        .data-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 51, 102, 0.08);
-            overflow: hidden;
+        /* Alert Messages */
+        .alert-custom {
             border: none;
-            margin-bottom: 2rem;
-        }
-
-        .card-header-custom {
-            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-            padding: 1.5rem 2rem;
-            border-bottom: 3px solid #ffd700;
-        }
-
-        .card-header-custom h5 {
-            color: #003366;
-            font-weight: 700;
-            margin: 0;
-            font-size: 1.3rem;
-        }
-
-        .table-container {
-            padding: 0;
-            overflow-x: auto;
-        }
-
-        .custom-table {
-            margin: 0;
-            width: 100%;
-        }
-
-        .custom-table thead {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-        }
-
-        .custom-table thead th {
-            color: #003366;
-            font-weight: 700;
-            padding: 1rem 1.5rem;
-            border: none;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.8px;
-        }
-
-        .custom-table tbody tr {
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .custom-table tbody tr:hover {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
-            transform: scale(1.01);
-            box-shadow: 0 3px 10px rgba(0, 51, 102, 0.1);
-        }
-
-        .custom-table tbody td {
-            padding: 1.2rem 1.5rem;
-            color: #555;
-            vertical-align: middle;
-        }
-
-        .custom-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .number-badge {
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #003366;
-            width: 35px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .kode-badge {
-            background: linear-gradient(135deg, #003366, #005599);
-            color: white;
-            padding: 0.4rem 0.9rem;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: inline-block;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
-        }
-
-        .badge-kategori {
-            background: linear-gradient(135deg, #17a2b8, #20c997);
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: inline-block;
-        }
-
-        .badge-klinis {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: inline-block;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: #999;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-state p {
-            font-size: 1.1rem;
-            margin: 0;
-        }
-
-        .info-box {
-            background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
-            border-left: 5px solid #003366;
             border-radius: 15px;
-            padding: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             box-shadow: 0 5px 20px rgba(0, 51, 102, 0.08);
         }
 
-        .info-box h6 {
-            color: #003366;
-            font-weight: 700;
-            margin-bottom: 0.8rem;
-            font-size: 1.1rem;
+        .alert-success-custom {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border-left: 4px solid #28a745;
         }
 
-        .info-box p {
-            color: #555;
-            line-height: 1.8;
-            margin: 0;
+        .alert-error-custom {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border-left: 4px solid #dc3545;
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
             .page-header {
                 padding: 1.5rem;
@@ -281,34 +362,70 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid px-4">
+    <div class="container-fluid">
+        <!-- Page Header -->
         <div class="page-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
-                    <h1>🏥 Kode Tindakan Terapi</h1>
-                    <p>Master data kode tindakan medis veteriner</p>
+                    <h1>📋 Manajemen Kode Tindakan Terapi</h1>
+                    <p>Kelola kode tindakan terapi RSHP Universitas Airlangga</p>
                 </div>
-                <a href="/admin/dashboard" class="btn-back">
-                    ← Kembali ke Dashboard
+                <a href="{{ route('admin.dashboard') }}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
                 </a>
             </div>
         </div>
 
+        <!-- Alert Messages -->
+        @if(session('success'))
+        <div class="alert-custom alert-success-custom">
+            <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong>Berhasil!</strong><br>
+                {{ session('success') }}
+            </div>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert-custom alert-error-custom">
+            <i class="bi bi-exclamation-circle-fill" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong>Error!</strong><br>
+                {{ session('error') }}
+            </div>
+        </div>
+        @endif
+
+        <!-- Stats Card -->
         <div class="stats-card">
             <div class="stats-icon">📊</div>
             <div class="stats-content">
                 <h3>{{ $kodeTindakans->count() }}</h3>
-                <p>Total Kode Tindakan Terdaftar</p>
+                <p>Total Kode Tindakan Terapi Terdaftar</p>
             </div>
         </div>
 
+        <!-- Data Table Card -->
         <div class="data-card">
             <div class="card-header-custom">
-                <h5>📋 Data Kode Tindakan</h5>
+                <h5><i class="bi bi-list-ul"></i> Daftar Kode Tindakan Terapi</h5>
+                <a href="{{ route('kode-tindakan.create') }}" class="btn-add">
+                    <i class="bi bi-plus-circle"></i> Tambah Kode Tindakan
+                </a>
             </div>
             
             <div class="table-container">
@@ -316,48 +433,55 @@
                     <thead>
                         <tr>
                             <th style="width: 60px;">No</th>
-                            <th style="width: 100px;">Kode</th>
-                            <th style="width: 35%;">Deskripsi Tindakan</th>
-                            <th style="width: 18%;">Kategori</th>
-                            <th style="width: 18%;">Kategori Klinis</th>
+                            <th style="width: 120px;">Kode</th>
+                            <th style="width: 30%;">Deskripsi Tindakan</th>
+                            <th>Kategori</th>
+                            <th>Kategori Klinis</th>
+                            <th style="width: 200px;" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($kodeTindakans as $index => $tindakan)
+                        @forelse($kodeTindakans as $index => $item)
                         <tr>
                             <td>
                                 <span class="number-badge">{{ $index + 1 }}</span>
                             </td>
                             <td>
-                                <span class="kode-badge">{{ $tindakan->kode }}</span>
+                                <span class="kode-badge">{{ $item->kode }}</span>
                             </td>
                             <td>
-                                <strong style="color: #003366;">{{ $tindakan->deskripsi_tindakan_terapi }}</strong>
+                                <strong style="color: #003366;">{{ $item->deskripsi_tindakan_terapi }}</strong>
                             </td>
                             <td>
-                                @if($tindakan->kategori)
-                                    <span class="badge-kategori">
-                                        {{ $tindakan->kategori->nama_kategori }}
-                                    </span>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
+                                <span class="kategori-badge badge-kategori">
+                                    <i class="bi bi-folder2"></i> {{ $item->kategori->nama_kategori ?? '-' }}
+                                </span>
                             </td>
                             <td>
-                                @if($tindakan->kategoriKlinis)
-                                    <span class="badge-klinis">
-                                        {{ $tindakan->kategoriKlinis->nama_kategori_klinis }}
-                                    </span>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
+                                <span class="kategori-badge badge-klinis">
+                                    <i class="bi bi-heart-pulse"></i> {{ $item->kategoriKlinis->nama_kategori_klinis ?? '-' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons justify-content-center">
+                                    <a href="{{ route('kode-tindakan.edit', $item->idkode_tindakan_terapi) }}" class="btn-action btn-edit">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <form action="{{ route('kode-tindakan.destroy', $item->idkode_tindakan_terapi) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-action btn-delete">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="empty-state">
+                            <td colspan="6" class="empty-state">
                                 <div class="empty-state-icon">📭</div>
-                                <p>Belum ada data kode tindakan</p>
+                                <p>Belum ada data kode tindakan. Klik tombol "Tambah Kode Tindakan" untuk menambahkan data.</p>
                             </td>
                         </tr>
                         @endforelse
@@ -366,11 +490,7 @@
             </div>
         </div>
 
-        <div class="info-box">
-            <h6>💡 Informasi</h6>
-            <p>Kode tindakan digunakan untuk mencatat layanan medis yang diberikan kepada hewan. Setiap kode memiliki kategori (jenis layanan) dan kategori klinis (tipe tindakan).</p>
-        </div>
-
+        <!-- Footer Info -->
         <div class="text-center mt-4">
             <p style="color: #999; font-size: 0.9rem;">
                 © 2025 RSHP Universitas Airlangga - Admin Panel

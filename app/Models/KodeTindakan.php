@@ -8,8 +8,10 @@ class KodeTindakan extends Model
 {
     protected $table = 'kode_tindakan_terapi';
     protected $primaryKey = 'idkode_tindakan_terapi';
+
+    // mematikan created_at dan updated_at
     public $timestamps = false;
-    
+
     protected $fillable = [
         'kode',
         'deskripsi_tindakan_terapi',

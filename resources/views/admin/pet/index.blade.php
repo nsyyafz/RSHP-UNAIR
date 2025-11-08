@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Pet - Admin RSHP</title>
+    <title>Manajemen Hewan Peliharaan - Admin RSHP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         * {
             margin: 0;
@@ -19,6 +20,7 @@
             padding: 2rem 0;
         }
 
+        /* Header Section */
         .page-header {
             background: linear-gradient(135deg, #003366 0%, #005599 100%);
             color: white;
@@ -54,6 +56,7 @@
             z-index: 1;
         }
 
+        /* Back Button */
         .btn-back {
             background: white;
             color: #003366;
@@ -75,43 +78,7 @@
             box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
 
-        .stats-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0, 51, 102, 0.08);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-left: 4px solid #ffd700;
-        }
-
-        .stats-icon {
-            font-size: 2.5rem;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #003366, #005599);
-            color: white;
-            border-radius: 12px;
-        }
-
-        .stats-content h3 {
-            color: #003366;
-            font-weight: 700;
-            margin: 0;
-            font-size: 2rem;
-        }
-
-        .stats-content p {
-            color: #666;
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
+        /* Card */
         .data-card {
             background: white;
             border-radius: 20px;
@@ -124,6 +91,11 @@
             background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
             padding: 1.5rem 2rem;
             border-bottom: 3px solid #ffd700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .card-header-custom h5 {
@@ -133,6 +105,72 @@
             font-size: 1.3rem;
         }
 
+        /* Add Button */
+        .btn-add {
+            background: linear-gradient(135deg, #003366, #005599);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #005599, #003366);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.3);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #ffc107, #ffb300);
+            color: #003366;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #ffb300, #ffc107);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+            color: #003366;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #c82333, #dc3545);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Table Styling */
         .table-container {
             padding: 0;
             overflow-x: auto;
@@ -178,6 +216,7 @@
             border-bottom: none;
         }
 
+        /* Number Badge */
         .number-badge {
             background: linear-gradient(135deg, #ffd700, #ffed4e);
             color: #003366;
@@ -191,53 +230,26 @@
             font-size: 0.9rem;
         }
 
-        .pet-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            margin-right: 10px;
-        }
-
-        .gender-badge {
-            font-size: 1.3rem;
-            margin-right: 0.3rem;
-        }
-
-        .badge-pemilik {
-            background: linear-gradient(135deg, #e91e63, #f06292);
-            color: white;
+        /* Gender Badge */
+        .badge-gender {
             padding: 0.4rem 0.8rem;
             border-radius: 8px;
-            font-weight: 600;
             font-size: 0.85rem;
+            font-weight: 600;
             display: inline-block;
         }
 
-        .badge-ras {
-            background: linear-gradient(135deg, #4caf50, #66bb6a);
+        .badge-jantan {
+            background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: inline-block;
         }
 
-        .badge-jenis {
-            background: linear-gradient(135deg, #17a2b8, #20c997);
+        .badge-betina {
+            background: linear-gradient(135deg, #e83e8c, #c2185b);
             color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: inline-block;
         }
 
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 3rem 2rem;
@@ -255,23 +267,69 @@
             margin: 0;
         }
 
-        .info-box {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        /* Stats Cards */
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 51, 102, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
             border-left: 4px solid #ffd700;
-            padding: 1.2rem;
-            border-radius: 10px;
-            margin-top: 1.5rem;
         }
 
-        .info-box small {
-            color: #555;
-            line-height: 1.6;
+        .stats-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #003366, #005599);
+            color: white;
+            border-radius: 12px;
         }
 
-        .info-box strong {
+        .stats-content h3 {
             color: #003366;
+            font-weight: 700;
+            margin: 0;
+            font-size: 2rem;
         }
 
+        .stats-content p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Alert Messages */
+        .alert-custom {
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 5px 20px rgba(0, 51, 102, 0.08);
+        }
+
+        .alert-success-custom {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error-custom {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .page-header {
                 padding: 1.5rem;
@@ -292,28 +350,54 @@
                 text-align: center;
             }
 
-            .pet-avatar {
-                width: 35px;
-                height: 35px;
-                font-size: 1.2rem;
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid">
+        <!-- Page Header -->
         <div class="page-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
-                    <h1>🐾 Daftar Hewan Peliharaan (Pet)</h1>
-                    <p>Data lengkap hewan peliharaan terdaftar di RSHP Universitas Airlangga</p>
+                    <h1>🐾 Manajemen Hewan Peliharaan</h1>
+                    <p>Kelola data hewan peliharaan terdaftar RSHP Universitas Airlangga</p>
                 </div>
-                <a href="/admin/dashboard" class="btn-back">
-                    ← Kembali ke Dashboard
+                <a href="{{ route('admin.dashboard') }}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
                 </a>
             </div>
         </div>
 
+        <!-- Alert Messages -->
+        @if(session('success'))
+        <div class="alert-custom alert-success-custom">
+            <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong>Berhasil!</strong><br>
+                {{ session('success') }}
+            </div>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert-custom alert-error-custom">
+            <i class="bi bi-exclamation-circle-fill" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong>Error!</strong><br>
+                {{ session('error') }}
+            </div>
+        </div>
+        @endif
+
+        <!-- Stats Card -->
         <div class="stats-card">
             <div class="stats-icon">📊</div>
             <div class="stats-content">
@@ -322,23 +406,27 @@
             </div>
         </div>
 
+        <!-- Data Table Card -->
         <div class="data-card">
             <div class="card-header-custom">
-                <h5>📋 Data Pet</h5>
+                <h5><i class="bi bi-list-ul"></i> Daftar Hewan Peliharaan</h5>
+                <a href="{{ route('pet.create') }}" class="btn-add">
+                    <i class="bi bi-plus-circle"></i> Tambah Hewan
+                </a>
             </div>
             
             <div class="table-container">
                 <table class="table custom-table">
                     <thead>
                         <tr>
-                            <th style="width: 50px;">No</th>
-                            <th style="width: 20%;">Nama Pet</th>
-                            <th style="width: 110px;">Tgl Lahir</th>
-                            <th style="width: 15%;">Warna/Tanda</th>
-                            <th style="width: 100px;">Gender</th>
+                            <th style="width: 60px;">No</th>
+                            <th style="width: 15%;">Nama Hewan</th>
                             <th style="width: 15%;">Pemilik</th>
-                            <th style="width: 12%;">Ras</th>
-                            <th style="width: 13%;">Jenis</th>
+                            <th style="width: 12%;">Jenis/Ras</th>
+                            <th style="width: 10%;">JK</th>
+                            <th style="width: 15%;">Warna/Tanda</th>
+                            <th style="width: 10%;">Tgl Lahir</th>
+                            <th style="width: 200px;" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -348,93 +436,60 @@
                                 <span class="number-badge">{{ $index + 1 }}</span>
                             </td>
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="pet-avatar">
-                                        @if($pet->jenisHewan && str_contains(strtolower($pet->jenisHewan->nama_jenis_hewan ?? ''), 'anjing'))
-                                            🐕
-                                        @elseif($pet->jenisHewan && str_contains(strtolower($pet->jenisHewan->nama_jenis_hewan ?? ''), 'kucing'))
-                                            🐈
-                                        @else
-                                            🐾
-                                        @endif
-                                    </div>
-                                    <strong style="color: #003366;">{{ $pet->nama }}</strong>
-                                </div>
+                                <strong style="color: #003366; font-size: 1.05rem;">
+                                    🐾 {{ $pet->nama }}
+                                </strong>
                             </td>
                             <td>
-                                @if($pet->tanggal_lahir)
-                                    {{ date('d-m-Y', strtotime($pet->tanggal_lahir)) }}
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
+                                <i class="bi bi-person-fill" style="color: #005599;"></i> {{ $pet->pemilik->user->nama ?? '-' }}
                             </td>
-                            <td>{{ $pet->warna_tanda ?? '-' }}</td>
                             <td>
-                                <span class="gender-badge">
-                                    @if(strtoupper($pet->jenis_kelamin) == 'P')
-                                        ♀️
-                                    @elseif(strtoupper($pet->jenis_kelamin) == 'L')
-                                        ♂️
-                                    @else
-                                        ❓
-                                    @endif
-                                </span>
-                                <small style="color: #666;">
-                                    {{ strtoupper($pet->jenis_kelamin) == 'P' ? 'Betina' : (strtoupper($pet->jenis_kelamin) == 'L' ? 'Jantan' : '-') }}
+                                <small style="line-height: 1.5;">
+                                    <strong style="color: #003366;">{{ $pet->rasHewan->jenisHewan->nama_jenis_hewan ?? '-' }}</strong><br>
+                                    <span style="color: #666;">{{ $pet->rasHewan->nama_ras ?? '-' }}</span>
                                 </small>
                             </td>
                             <td>
-                                @if($pet->pemilik && $pet->pemilik->user)
-                                    <span class="badge-pemilik">
-                                        {{ $pet->pemilik->user->nama }}
-                                    </span>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
+                                <span class="badge-gender {{ $pet->jenis_kelamin == 'J' ? 'badge-jantan' : 'badge-betina' }}">
+                                    {{ $pet->jenis_kelamin == 'J' ? '♂' : '♀' }} {{ $pet->jenis_kelamin_text }}
+                                </span>
+                            </td>
+                            <td>{{ $pet->warna_tanda }}</td>
+                            <td>
+                                <small style="line-height: 1.5;">
+                                    <strong style="color: #003366;">{{ \Carbon\Carbon::parse($pet->tanggal_lahir)->format('d/m/Y') }}</strong><br>
+                                    <span style="color: #6c757d;">{{ $pet->umur }}</span>
+                                </small>
                             </td>
                             <td>
-                                @if($pet->rasHewan)
-                                    <span class="badge-ras">
-                                        {{ $pet->rasHewan->nama_ras }}
-                                    </span>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($pet->jenisHewan)
-                                    <span class="badge-jenis">
-                                        {{ $pet->jenisHewan->nama_jenis_hewan }}
-                                    </span>
-                                @elseif($pet->rasHewan && $pet->rasHewan->jenisHewan)
-                                    <span class="badge-jenis">
-                                        {{ $pet->rasHewan->jenisHewan->nama_jenis_hewan }}
-                                    </span>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
+                                <div class="action-buttons justify-content-center">
+                                    <a href="{{ route('pet.edit', $pet->idpet) }}" class="btn-action btn-edit">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                   <form action="{{ route('pet.destroy', $pet->idpet) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-action btn-delete">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
                             <td colspan="8" class="empty-state">
                                 <div class="empty-state-icon">📭</div>
-                                <p>Belum ada data pet</p>
+                                <p>Belum ada data hewan peliharaan. Klik tombol "Tambah Hewan" untuk menambahkan data.</p>
                             </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <div class="info-box">
-                <small>
-                    <strong>Keterangan Gender:</strong> ♂️ Jantan (L) | ♀️ Betina (P)<br>
-                    <strong>Info:</strong> Data pet mencakup informasi lengkap hewan peliharaan beserta pemilik, ras, dan jenis hewan.
-                </small>
-            </div>
         </div>
 
+        <!-- Footer Info -->
         <div class="text-center mt-4">
             <p style="color: #999; font-size: 0.9rem;">
                 © 2025 RSHP Universitas Airlangga - Admin Panel
