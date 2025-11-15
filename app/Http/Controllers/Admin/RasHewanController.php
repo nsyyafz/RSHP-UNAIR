@@ -4,14 +4,23 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\RasHewan;
-use App\Models\JenisHewan;
+use Illuminate\Support\Facades\DB;
+// use App\Models\RasHewan;
+// use App\Models\JenisHewan;
 
 class RasHewanController extends Controller
 {
     public function index()
     {
-        $rasHewans = RasHewan::with('jenisHewan')->get();
+        // Eloquent
+        // $rasHewans = RasHewan::with('jenisHewan')->get();
+        
+        // Query Builder
+        $rasHewans = DB::table('ras_hewan')
+            ->leftJoin('jenis_hewan', 'ras_hewan.idjenis_hewan', '=', 'jenis_hewan.idjenis_hewan')
+            ->select('ras_hewan.*', 'jenis_hewan.nama_jenis_hewan')
+            ->get();
+        
         return view('admin.ras-hewan.index', compact('rasHewans'));
     }
 
@@ -20,7 +29,14 @@ class RasHewanController extends Controller
      */
     public function create()
     {
-        $jenisHewans = JenisHewan::select('idjenis_hewan', 'nama_jenis_hewan')->get();
+        // Eloquent
+        // $jenisHewans = JenisHewan::select('idjenis_hewan', 'nama_jenis_hewan')->get();
+        
+        // Query Builder
+        $jenisHewans = DB::table('jenis_hewan')
+            ->select('idjenis_hewan', 'nama_jenis_hewan')
+            ->get();
+        
         return view('admin.ras-hewan.create', compact('jenisHewans'));
     }
 
@@ -29,14 +45,19 @@ class RasHewanController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
-        $validatedData = $this->validateRasHewan($request);
+        try {
+            // Validasi input
+            $validatedData = $this->validateRasHewan($request);
 
-        // Helper untuk menyimpan data
-        $rasHewan = $this->createRasHewan($validatedData);
+            // Helper untuk menyimpan data
+            $rasHewan = $this->createRasHewan($validatedData);
 
-        return redirect()->route('ras-hewan.index')
-                         ->with('success', 'Ras hewan berhasil ditambahkan.');
+            return redirect()->route('ras-hewan.index')
+                            ->with('success', 'Ras hewan berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->route('ras-hewan.index')
+                            ->with('error', 'Gagal menambahkan ras hewan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -53,8 +74,24 @@ class RasHewanController extends Controller
     public function edit(string $id)
     {
         try {
-            $rasHewan = RasHewan::findOrFail($id);
-            $jenisHewans = JenisHewan::select('idjenis_hewan', 'nama_jenis_hewan')->get();
+            // Eloquent
+            // $rasHewan = RasHewan::findOrFail($id);
+            // $jenisHewans = JenisHewan::select('idjenis_hewan', 'nama_jenis_hewan')->get();
+            
+            // Query Builder
+            $rasHewan = DB::table('ras_hewan')
+                ->where('idras_hewan', $id)
+                ->first();
+            
+            if (!$rasHewan) {
+                return redirect()->route('ras-hewan.index')
+                                ->with('error', 'Data ras hewan tidak ditemukan.');
+            }
+            
+            $jenisHewans = DB::table('jenis_hewan')
+                ->select('idjenis_hewan', 'nama_jenis_hewan')
+                ->get();
+            
             return view('admin.ras-hewan.edit', compact('rasHewan', 'jenisHewans'));
         } catch (\Exception $e) {
             return redirect()->route('ras-hewan.index')
@@ -68,17 +105,34 @@ class RasHewanController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            // Cari data ras hewan
-            $rasHewan = RasHewan::findOrFail($id);
+            // Eloquent
+            // $rasHewan = RasHewan::findOrFail($id);
+            // $rasHewan->update([
+            //     'nama_ras' => $this->formatNamaRas($validatedData['nama_ras']),
+            //     'idjenis_hewan' => $validatedData['idjenis_hewan']
+            // ]);
+            
+            // Query Builder
+            // Cek apakah data ada
+            $rasHewan = DB::table('ras_hewan')
+                ->where('idras_hewan', $id)
+                ->first();
+
+            if (!$rasHewan) {
+                return redirect()->route('ras-hewan.index')
+                                ->with('error', 'Data ras hewan tidak ditemukan.');
+            }
             
             // Validasi input dengan mengecualikan ID yang sedang diedit
             $validatedData = $this->validateRasHewan($request, $id);
             
             // Update data
-            $rasHewan->update([
-                'nama_ras' => $this->formatNamaRas($validatedData['nama_ras']),
-                'idjenis_hewan' => $validatedData['idjenis_hewan']
-            ]);
+            DB::table('ras_hewan')
+                ->where('idras_hewan', $id)
+                ->update([
+                    'nama_ras' => $this->formatNamaRas($validatedData['nama_ras']),
+                    'idjenis_hewan' => $validatedData['idjenis_hewan']
+                ]);
             
             return redirect()->route('ras-hewan.index')
                             ->with('success', 'Ras hewan berhasil diperbarui.');
@@ -94,16 +148,39 @@ class RasHewanController extends Controller
     public function destroy(string $id)
     {
         try {
-            $rasHewan = RasHewan::findOrFail($id);
-            
-            // Cek apakah ras hewan masih digunakan di tabel lain (opsional)
-            // Uncomment jika ada relasi dengan tabel lain
+            // Eloquent
+            // $rasHewan = RasHewan::findOrFail($id);
             // if ($rasHewan->pets()->count() > 0) {
             //     return redirect()->route('ras-hewan.index')
             //                      ->with('error', 'Ras hewan tidak dapat dihapus karena masih digunakan.');
             // }
+            // $rasHewan->delete();
             
-            $rasHewan->delete();
+            // Query Builder
+            // Cek apakah data ada
+            $rasHewan = DB::table('ras_hewan')
+                ->where('idras_hewan', $id)
+                ->first();
+
+            if (!$rasHewan) {
+                return redirect()->route('ras-hewan.index')
+                                ->with('error', 'Data ras hewan tidak ditemukan.');
+            }
+            
+            // Cek apakah ras hewan masih digunakan di tabel lain
+            $count = DB::table('pet')
+                ->where('idras_hewan', $id)
+                ->count();
+            
+            if ($count > 0) {
+                return redirect()->route('ras-hewan.index')
+                                 ->with('error', 'Ras hewan tidak dapat dihapus karena masih digunakan.');
+            }
+            
+            // Hapus data
+            DB::table('ras_hewan')
+                ->where('idras_hewan', $id)
+                ->delete();
             
             return redirect()->route('ras-hewan.index')
                             ->with('success', 'Ras hewan berhasil dihapus.');
@@ -157,10 +234,23 @@ class RasHewanController extends Controller
     protected function createRasHewan(array $data)
     {
         try {
-            return RasHewan::create([
+            // Eloquent
+            // return RasHewan::create([
+            //     'nama_ras' => $this->formatNamaRas($data['nama_ras']),
+            //     'idjenis_hewan' => $data['idjenis_hewan']
+            // ]);
+            
+            // Query Builder
+            // Generate idras_hewan baru
+            $maxId = DB::table('ras_hewan')->max('idras_hewan');
+            $idras_hewan = $maxId ? $maxId + 1 : 1;
+            $rasHewan = DB::table('ras_hewan')->insert([
+                'idras_hewan' => $idras_hewan,
                 'nama_ras' => $this->formatNamaRas($data['nama_ras']),
                 'idjenis_hewan' => $data['idjenis_hewan']
             ]);
+            
+            return $rasHewan;
         } catch (\Exception $e) {
             throw new \Exception("Gagal menyimpan ras hewan: " . $e->getMessage());
         }

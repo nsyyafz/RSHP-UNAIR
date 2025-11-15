@@ -1,502 +1,224 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Hewan Peliharaan - Admin RSHP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.lte.main')
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-            padding: 2rem 0;
-        }
+@section('title', 'Daftar Hewan Peliharaan')
 
-        /* Header Section */
-        .page-header {
-            background: linear-gradient(135deg, #003366 0%, #005599 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 51, 102, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .page-header::before {
-            content: '🐾';
-            position: absolute;
-            font-size: 10rem;
-            opacity: 0.1;
-            right: -2rem;
-            top: -2rem;
-        }
-
-        .page-header h1 {
-            font-weight: 700;
-            margin: 0;
-            font-size: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-header p {
-            margin: 0.5rem 0 0;
-            opacity: 0.9;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Back Button */
-        .btn-back {
-            background: white;
-            color: #003366;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-back:hover {
-            background: #ffd700;
-            color: #003366;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-        }
-
-        /* Card */
-        .data-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 51, 102, 0.08);
-            overflow: hidden;
-            border: none;
-        }
-
-        .card-header-custom {
-            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-            padding: 1.5rem 2rem;
-            border-bottom: 3px solid #ffd700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .card-header-custom h5 {
-            color: #003366;
-            font-weight: 700;
-            margin: 0;
-            font-size: 1.3rem;
-        }
-
-        /* Add Button */
-        .btn-add {
-            background: linear-gradient(135deg, #003366, #005599);
-            color: white;
-            border: none;
-            padding: 0.7rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-        }
-
-        .btn-add:hover {
-            background: linear-gradient(135deg, #005599, #003366);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.3);
-            color: white;
-        }
-
-        /* Action Buttons */
-        .btn-action {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.9rem;
-            text-decoration: none;
-        }
-
-        .btn-edit {
-            background: linear-gradient(135deg, #ffc107, #ffb300);
-            color: #003366;
-        }
-
-        .btn-edit:hover {
-            background: linear-gradient(135deg, #ffb300, #ffc107);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
-            color: #003366;
-        }
-
-        .btn-delete {
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background: linear-gradient(135deg, #c82333, #dc3545);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        /* Table Styling */
-        .table-container {
-            padding: 0;
-            overflow-x: auto;
-        }
-
-        .custom-table {
-            margin: 0;
-            width: 100%;
-        }
-
-        .custom-table thead {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-        }
-
-        .custom-table thead th {
-            color: #003366;
-            font-weight: 700;
-            padding: 1rem 1.5rem;
-            border: none;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 0.8px;
-        }
-
-        .custom-table tbody tr {
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .custom-table tbody tr:hover {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
-            transform: scale(1.01);
-            box-shadow: 0 3px 10px rgba(0, 51, 102, 0.1);
-        }
-
-        .custom-table tbody td {
-            padding: 1.2rem 1.5rem;
-            color: #555;
-            vertical-align: middle;
-        }
-
-        .custom-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        /* Number Badge */
-        .number-badge {
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #003366;
-            width: 35px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        /* Gender Badge */
-        .badge-gender {
-            padding: 0.4rem 0.8rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .badge-jantan {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
-        }
-
-        .badge-betina {
-            background: linear-gradient(135deg, #e83e8c, #c2185b);
-            color: white;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: #999;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-state p {
-            font-size: 1.1rem;
-            margin: 0;
-        }
-
-        /* Stats Cards */
-        .stats-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0, 51, 102, 0.08);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-left: 4px solid #ffd700;
-        }
-
-        .stats-icon {
-            font-size: 2.5rem;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #003366, #005599);
-            color: white;
-            border-radius: 12px;
-        }
-
-        .stats-content h3 {
-            color: #003366;
-            font-weight: 700;
-            margin: 0;
-            font-size: 2rem;
-        }
-
-        .stats-content p {
-            color: #666;
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
-        /* Alert Messages */
-        .alert-custom {
-            border: none;
-            border-radius: 15px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            box-shadow: 0 5px 20px rgba(0, 51, 102, 0.08);
-        }
-
-        .alert-success-custom {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert-error-custom {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .page-header {
-                padding: 1.5rem;
-            }
-
-            .page-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .custom-table thead th,
-            .custom-table tbody td {
-                padding: 0.8rem;
-                font-size: 0.85rem;
-            }
-
-            .stats-card {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn-action {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
-</head>
-<body>
+@section('content')
+<!-- Content Header (Page header) -->
+<div class="app-content-header">
     <div class="container-fluid">
-        <!-- Page Header -->
-        <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                    <h1>🐾 Manajemen Hewan Peliharaan</h1>
-                    <p>Kelola data hewan peliharaan terdaftar RSHP Universitas Airlangga</p>
-                </div>
-                <a href="{{ route('admin.dashboard') }}" class="btn-back">
-                    <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-                </a>
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">Daftar Hewan Peliharaan</h3>
             </div>
-        </div>
-
-        <!-- Alert Messages -->
-        @if(session('success'))
-        <div class="alert-custom alert-success-custom">
-            <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i>
-            <div>
-                <strong>Berhasil!</strong><br>
-                {{ session('success') }}
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Hewan Peliharaan</li>
+                </ol>
             </div>
-        </div>
-        @endif
-
-        @if(session('error'))
-        <div class="alert-custom alert-error-custom">
-            <i class="bi bi-exclamation-circle-fill" style="font-size: 1.5rem;"></i>
-            <div>
-                <strong>Error!</strong><br>
-                {{ session('error') }}
-            </div>
-        </div>
-        @endif
-
-        <!-- Stats Card -->
-        <div class="stats-card">
-            <div class="stats-icon">📊</div>
-            <div class="stats-content">
-                <h3>{{ $pets->count() }}</h3>
-                <p>Total Hewan Peliharaan Terdaftar</p>
-            </div>
-        </div>
-
-        <!-- Data Table Card -->
-        <div class="data-card">
-            <div class="card-header-custom">
-                <h5><i class="bi bi-list-ul"></i> Daftar Hewan Peliharaan</h5>
-                <a href="{{ route('pet.create') }}" class="btn-add">
-                    <i class="bi bi-plus-circle"></i> Tambah Hewan
-                </a>
-            </div>
-            
-            <div class="table-container">
-                <table class="table custom-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 60px;">No</th>
-                            <th style="width: 15%;">Nama Hewan</th>
-                            <th style="width: 15%;">Pemilik</th>
-                            <th style="width: 12%;">Jenis/Ras</th>
-                            <th style="width: 10%;">JK</th>
-                            <th style="width: 15%;">Warna/Tanda</th>
-                            <th style="width: 10%;">Tgl Lahir</th>
-                            <th style="width: 200px;" class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($pets as $index => $pet)
-                        <tr>
-                            <td>
-                                <span class="number-badge">{{ $index + 1 }}</span>
-                            </td>
-                            <td>
-                                <strong style="color: #003366; font-size: 1.05rem;">
-                                    🐾 {{ $pet->nama }}
-                                </strong>
-                            </td>
-                            <td>
-                                <i class="bi bi-person-fill" style="color: #005599;"></i> {{ $pet->pemilik->user->nama ?? '-' }}
-                            </td>
-                            <td>
-                                <small style="line-height: 1.5;">
-                                    <strong style="color: #003366;">{{ $pet->rasHewan->jenisHewan->nama_jenis_hewan ?? '-' }}</strong><br>
-                                    <span style="color: #666;">{{ $pet->rasHewan->nama_ras ?? '-' }}</span>
-                                </small>
-                            </td>
-                            <td>
-                                <span class="badge-gender {{ $pet->jenis_kelamin == 'J' ? 'badge-jantan' : 'badge-betina' }}">
-                                    {{ $pet->jenis_kelamin == 'J' ? '♂' : '♀' }} {{ $pet->jenis_kelamin_text }}
-                                </span>
-                            </td>
-                            <td>{{ $pet->warna_tanda }}</td>
-                            <td>
-                                <small style="line-height: 1.5;">
-                                    <strong style="color: #003366;">{{ \Carbon\Carbon::parse($pet->tanggal_lahir)->format('d/m/Y') }}</strong><br>
-                                    <span style="color: #6c757d;">{{ $pet->umur }}</span>
-                                </small>
-                            </td>
-                            <td>
-                                <div class="action-buttons justify-content-center">
-                                    <a href="{{ route('pet.edit', $pet->idpet) }}" class="btn-action btn-edit">
-                                        <i class="bi bi-pencil-square"></i> Edit
-                                    </a>
-                                   <form action="{{ route('pet.destroy', $pet->idpet) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-action btn-delete">
-                                            <i class="bi bi-trash"></i> Hapus
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8" class="empty-state">
-                                <div class="empty-state-icon">📭</div>
-                                <p>Belum ada data hewan peliharaan. Klik tombol "Tambah Hewan" untuk menambahkan data.</p>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Footer Info -->
-        <div class="text-center mt-4">
-            <p style="color: #999; font-size: 0.9rem;">
-                © 2025 RSHP Universitas Airlangga - Admin Panel
-            </p>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<!-- Main content -->
+<div class="app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Data Hewan Peliharaan</h3>
+                        <div class="card-tools">
+                            <a href="{{ route('pet.create') }}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-plus-circle"></i> Tambah Hewan
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-0">
+                        @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
+
+                        @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 60px;">No</th>
+                                        <th style="width: 110px;">Nama Hewan</th>
+                                        <th style="width: 110px;">Pemilik</th>
+                                        <th style="width: 160px;">Jenis/Ras</th>
+                                        <th style="width: 110px;">JK</th>
+                                        <th style="width: 140px;">Warna/Tanda</th>
+                                        <th style="width: 120px;">Tgl lahir</th>
+                                        <th style="width: 150px;" class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($pets as $index => $pet)
+                                    <tr>
+                                        <td>
+                                            <span class="badge text-bg-secondary">{{ $index + 1 }}</span>
+                                        </td>
+                                        <td>
+                                            <strong> {{ $pet->nama }}</strong>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-person-fill text-primary"></i> 
+                                            <small>{{ $pet->nama_pemilik ?? '-' }}</small>
+                                        </td>
+                                        <td>
+                                            <strong class="text-primary">{{ $pet->nama_jenis_hewan ?? '-' }}</strong><br>
+                                            <small class="text-muted">{{ $pet->nama_ras ?? '-' }}</small>
+                                        </td>
+                                        <td>
+                                            @if($pet->jenis_kelamin == 'J')
+                                                <span class="badge text-bg-primary">
+                                                    <i class="bi bi-gender-male"></i> Jantan
+                                                </span>
+                                            @else
+                                                <span class="badge text-bg-pink" style="background-color: #e83e8c; color: white;">
+                                                    <i class="bi bi-gender-female"></i> Betina
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $pet->warna_tanda }}</td>
+                                        <td>
+                                            <strong>{{ \Carbon\Carbon::parse($pet->tanggal_lahir)->format('d/m/Y') }}</strong><br>
+                                            <small class="text-muted">
+                                                @php
+                                                    $tanggalLahir = \Carbon\Carbon::parse($pet->tanggal_lahir);
+                                                    $tahun = $tanggalLahir->age;
+                                                    $bulan = $tanggalLahir->diff(now())->m;
+                                                    
+                                                    if ($tahun > 0) {
+                                                        echo $tahun . ' tahun';
+                                                        if ($bulan > 0) echo ' ' . $bulan . ' bulan';
+                                                    } elseif ($bulan > 0) {
+                                                        echo $bulan . ' bulan';
+                                                    } else {
+                                                        echo $tanggalLahir->diff(now())->d . ' hari';
+                                                    }
+                                                @endphp
+                                            </small>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('pet.edit', $pet->idpet) }}" 
+                                                   class="btn btn-warning btn-sm"
+                                                   data-bs-toggle="tooltip" 
+                                                   title="Edit">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <form action="{{ route('pet.destroy', $pet->idpet) }}" 
+                                                      method="POST" 
+                                                      style="display: inline;"
+                                                      onsubmit="return confirm('Yakin ingin menghapus data hewan {{ $pet->nama }}?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" 
+                                                            class="btn btn-danger btn-sm"
+                                                            data-bs-toggle="tooltip" 
+                                                            title="Hapus">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center py-5">
+                                            <div class="text-muted">
+                                                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                                <p class="mt-3">Tidak ada data hewan peliharaan</p>
+                                                <a href="{{ route('pet.create') }}" class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-plus-circle"></i> Tambah Data Pertama
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    @if($pets->count() > 0)
+                    <div class="card-footer clearfix">
+                        <div class="float-end">
+                            <span class="text-muted">Total: <strong>{{ $pets->count() }}</strong> data</span>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('styles')
+<style>
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .btn-group .btn {
+        border-radius: 0.25rem;
+        margin: 0 2px;
+    }
+    
+    .badge {
+        font-size: 0.875rem;
+        padding: 0.35em 0.65em;
+    }
+    
+    .card {
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.125), 0 1px 3px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+    }
+    
+    .card-header {
+        background-color: rgba(0, 0, 0, 0.03);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .alert {
+        border-radius: 0.375rem;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>
+@endpush

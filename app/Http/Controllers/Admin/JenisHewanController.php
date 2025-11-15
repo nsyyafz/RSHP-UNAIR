@@ -4,16 +4,22 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
-use App\Models\JenisHewan;
+use Illuminate\Support\Facades\DB;
+// use App\Models\JenisHewan;
 
 class JenisHewanController extends Controller
 {
     public function index()
-    {   
-        // $jenisHewan = JenisHewan::select ('idjenis_hewan', 'nama_jenis_hewan')->get();
-        $jenisHewans = JenisHewan::all();
-        return view('admin.jenis-hewan.index', compact('jenisHewans'));
+    {
+        // Eloquent
+        // $jenisHewan = JenisHewan::all();
+
+        // Query Builder
+        $jenisHewan = DB::table('jenis_hewan')
+            ->select('idjenis_hewan', 'nama_jenis_hewan')
+            ->get();
+
+        return view('admin.jenis-hewan.index', compact('jenisHewan'));
     }
 
     public function create()
@@ -26,55 +32,14 @@ class JenisHewanController extends Controller
      */
     public function store(Request $request)
     {
-    // Validasi input
-    $validatedData = $this->validateJenisHewan($request);
+        // Validasi input
+        $validatedData = $this->validateJenisHewan($request);
 
-    // Helper untuk menyimpan data
-    $jenisHewan = $this->createJenisHewan($validatedData);
+        // Helper untuk menyimpan data
+        $jenisHewan = $this->createJenisHewan($validatedData);
 
-    return redirect()->route('jenis-hewan.index')
-                     ->with('success', 'Jenis hewan berhasil ditambahkan.');
-    }
-
-    protected function validateJenisHewan(Request $request, $id = null)
-    {
-    // data yang bersifat uniq
-    $uniqueRule = $id ?
-        'unique:jenis_hewan,nama_jenis_hewan,' . $id . ',idjenis_hewan' :
-        'unique:jenis_hewan,nama_jenis_hewan';
-
-    // validasi data input
-    return $request->validate([
-        'nama_jenis_hewan' => [
-            'required',
-            'string',
-            'max:55',
-            'min:3',
-            $uniqueRule
-        ]
-    ], [
-        'nama_jenis_hewan.required' => 'Nama jenis hewan wajib diisi.',
-        'nama_jenis_hewan.string' => 'Nama jenis hewan harus berupa teks.',
-        'nama_jenis_hewan.max' => 'Nama jenis hewan maksimal 255 karakter.',
-        'nama_jenis_hewan.min' => 'Nama jenis hewan minimal 3 karakter.',
-        'nama_jenis_hewan.unique' => 'Nama jenis hewan sudah ada.'
-    ]);
-    }
-
-    protected function createJenisHewan(array $data)
-    {
-    try {
-        return JenisHewan::create([
-            'nama_jenis_hewan' => $this->formatNamaJenisHewan($data['nama_jenis_hewan']),
-        ]);
-    } catch (\Exception $e) {
-        throw new \Exception("Gagal menyimpan jenis hewan: " . $e->getMessage());
-    }
-    }
-
-    protected function formatNamaJenisHewan($nama)
-    {
-        return ucwords(strtolower($nama));
+        return redirect()->route('jenis-hewan.index')
+                         ->with('success', 'Jenis hewan berhasil ditambahkan.');
     }
 
     /**
@@ -91,7 +56,19 @@ class JenisHewanController extends Controller
     public function edit(string $id)
     {
         try {
-            $jenisHewan = JenisHewan::findOrFail($id);
+            // Eloquent
+            // $jenisHewan = JenisHewan::findOrFail($id);
+
+            // Query Builder
+            $jenisHewan = DB::table('jenis_hewan')
+                ->where('idjenis_hewan', $id)
+                ->first();
+
+            if (!$jenisHewan) {
+                return redirect()->route('jenis-hewan.index')
+                                ->with('error', 'Data jenis hewan tidak ditemukan.');
+            }
+
             return view('admin.jenis-hewan.edit', compact('jenisHewan'));
         } catch (\Exception $e) {
             return redirect()->route('jenis-hewan.index')
@@ -105,16 +82,32 @@ class JenisHewanController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            // Cari data jenis hewan
-            $jenisHewan = JenisHewan::findOrFail($id);
+            // Eloquent
+            // $jenisHewan = JenisHewan::findOrFail($id);
+            // $jenisHewan->update([
+            //     'nama_jenis_hewan' => $this->formatNamaJenisHewan($validatedData['nama_jenis_hewan']),
+            // ]);
+
+            // Query Builder
+            // Cek apakah data ada
+            $jenisHewan = DB::table('jenis_hewan')
+                ->where('idjenis_hewan', $id)
+                ->first();
+
+            if (!$jenisHewan) {
+                return redirect()->route('jenis-hewan.index')
+                                ->with('error', 'Data jenis hewan tidak ditemukan.');
+            }
             
             // Validasi input dengan mengecualikan ID yang sedang diedit
             $validatedData = $this->validateJenisHewan($request, $id);
             
             // Update data
-            $jenisHewan->update([
-                'nama_jenis_hewan' => $this->formatNamaJenisHewan($validatedData['nama_jenis_hewan']),
-            ]);
+            DB::table('jenis_hewan')
+                ->where('idjenis_hewan', $id)
+                ->update([
+                    'nama_jenis_hewan' => $this->formatNamaJenisHewan($validatedData['nama_jenis_hewan']),
+                ]);
             
             return redirect()->route('jenis-hewan.index')
                             ->with('success', 'Jenis hewan berhasil diperbarui.');
@@ -130,22 +123,108 @@ class JenisHewanController extends Controller
     public function destroy(string $id)
     {
         try {
-            $jenisHewan = JenisHewan::findOrFail($id);
+            // Eloquent
+            // $jenisHewan = JenisHewan::findOrFail($id);
+            // if ($jenisHewan->pets()->count() > 0) {
+            //     return redirect()->route('jenis-hewan.index')
+            //                      ->with('error', 'Jenis hewan tidak dapat dihapus karena masih digunakan.');
+            // }
+            // $jenisHewan->delete();
+
+            // Query Builder
+            // Cek apakah data ada
+            $jenisHewan = DB::table('jenis_hewan')
+                ->where('idjenis_hewan', $id)
+                ->first();
+
+            if (!$jenisHewan) {
+                return redirect()->route('jenis-hewan.index')
+                                ->with('error', 'Data jenis hewan tidak ditemukan.');
+            }
             
             // Cek apakah jenis hewan masih digunakan di tabel lain (opsional)
             // Uncomment jika ada relasi dengan tabel lain
-            if ($jenisHewan->pets()->count() > 0) {
+            $count = DB::table('ras_hewan')->where('idjenis_hewan', $id)->count();
+            if ($count > 0) {
                 return redirect()->route('jenis-hewan.index')
                                  ->with('error', 'Jenis hewan tidak dapat dihapus karena masih digunakan.');
             }
             
-            $jenisHewan->delete();
+            // Hapus data
+            DB::table('jenis_hewan')
+                ->where('idjenis_hewan', $id)
+                ->delete();
             
             return redirect()->route('jenis-hewan.index')
                             ->with('success', 'Jenis hewan berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('jenis-hewan.index')
                             ->with('error', 'Gagal menghapus jenis hewan: ' . $e->getMessage());
+        }
+    }
+
+    // ========== HELPER METHODS ==========
+
+    /**
+     * Validasi data jenis hewan
+     */
+    protected function validateJenisHewan(Request $request, $id = null)
+    {
+        // Data yang bersifat unique
+        $uniqueRule = $id ?
+            'unique:jenis_hewan,nama_jenis_hewan,' . $id . ',idjenis_hewan' :
+            'unique:jenis_hewan,nama_jenis_hewan';
+
+        // Validasi data input
+        return $request->validate([
+            'nama_jenis_hewan' => [
+                'required',
+                'string',
+                'max:55',
+                'min:3',
+                $uniqueRule
+            ]
+        ], [
+            'nama_jenis_hewan.required' => 'Nama jenis hewan wajib diisi.',
+            'nama_jenis_hewan.string' => 'Nama jenis hewan harus berupa teks.',
+            'nama_jenis_hewan.max' => 'Nama jenis hewan maksimal 55 karakter.',
+            'nama_jenis_hewan.min' => 'Nama jenis hewan minimal 3 karakter.',
+            'nama_jenis_hewan.unique' => 'Nama jenis hewan sudah ada.'
+        ]);
+    }
+
+    /**
+     * Helper untuk format nama jenis hewan
+     */
+    protected function formatNamaJenisHewan($nama)
+    {
+        return ucwords(strtolower($nama));
+    }
+
+    /**
+     * Helper untuk membuat data baru
+     */
+    protected function createJenisHewan(array $data)
+    {
+        try {
+            // Eloquent
+            // return JenisHewan::create([
+            //     'nama_jenis_hewan' => $this->formatNamaJenisHewan($data['nama_jenis_hewan']),
+            // ]);
+
+            // Query Builder
+
+            // Generate idjenis_hewan baru
+            $maxId = DB::table('jenis_hewan')->max('idjenis_hewan');
+            $idjenis_hewan = $maxId ? $maxId + 1 : 1;
+            $jenisHewan = DB::table('jenis_hewan')->insert([
+                'idjenis_hewan' => $idjenis_hewan,
+                'nama_jenis_hewan' => $this->formatNamaJenisHewan($data['nama_jenis_hewan']),
+            ]);
+
+            return $jenisHewan;
+        } catch (\Exception $e) {
+            throw new \Exception('Gagal menyimpan data jenis hewan: ' . $e->getMessage());
         }
     }
 }

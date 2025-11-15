@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Kategori;
+use Illuminate\Support\Facades\DB;
+// use App\Models\Kategori;
 
 class KategoriController extends Controller
 {
@@ -13,7 +14,12 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        $kategoris = Kategori::all();
+        // Eloquent
+        // $kategoris = Kategori::all();
+        
+        // Query Builder
+        $kategoris = DB::table('kategori')->get();
+        
         return view('admin.kategori.index', compact('kategoris'));
     }
 
@@ -51,8 +57,25 @@ class KategoriController extends Controller
     public function show(string $id)
     {
         try {
-            $kategori = Kategori::with('kodeTindakan')->findOrFail($id);
-            return view('admin.kategori.show', compact('kategori'));
+            // Eloquent
+            // $kategori = Kategori::with('kodeTindakan')->findOrFail($id);
+            
+            // Query Builder
+            $kategori = DB::table('kategori')
+                ->where('idkategori', $id)
+                ->first();
+            
+            if (!$kategori) {
+                return redirect()->route('kategori.index')
+                                ->with('error', 'Data kategori tidak ditemukan.');
+            }
+            
+            // Ambil kode tindakan terkait
+            $kodeTindakans = DB::table('kode_tindakan_terapi')
+                ->where('idkategori', $id)
+                ->get();
+            
+            return view('admin.kategori.show', compact('kategori', 'kodeTindakans'));
         } catch (\Exception $e) {
             return redirect()->route('kategori.index')
                            ->with('error', 'Data kategori tidak ditemukan.');
@@ -65,7 +88,19 @@ class KategoriController extends Controller
     public function edit(string $id)
     {
         try {
-            $kategori = Kategori::findOrFail($id);
+            // Eloquent
+            // $kategori = Kategori::findOrFail($id);
+            
+            // Query Builder
+            $kategori = DB::table('kategori')
+                ->where('idkategori', $id)
+                ->first();
+            
+            if (!$kategori) {
+                return redirect()->route('kategori.index')
+                                ->with('error', 'Data kategori tidak ditemukan.');
+            }
+            
             return view('admin.kategori.edit', compact('kategori'));
         } catch (\Exception $e) {
             return redirect()->route('kategori.index')
@@ -79,16 +114,32 @@ class KategoriController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            // Cari data kategori
-            $kategori = Kategori::findOrFail($id);
+            // Eloquent
+            // $kategori = Kategori::findOrFail($id);
+            // $kategori->update([
+            //     'nama_kategori' => $this->formatNamaKategori($validatedData['nama_kategori'])
+            // ]);
+            
+            // Query Builder
+            // Cek apakah data ada
+            $kategori = DB::table('kategori')
+                ->where('idkategori', $id)
+                ->first();
+
+            if (!$kategori) {
+                return redirect()->route('kategori.index')
+                                ->with('error', 'Data kategori tidak ditemukan.');
+            }
             
             // Validasi input dengan mengecualikan ID yang sedang diedit
             $validatedData = $this->validateKategori($request, $id);
             
             // Update data
-            $kategori->update([
-                'nama_kategori' => $this->formatNamaKategori($validatedData['nama_kategori'])
-            ]);
+            DB::table('kategori')
+                ->where('idkategori', $id)
+                ->update([
+                    'nama_kategori' => $this->formatNamaKategori($validatedData['nama_kategori'])
+                ]);
             
             return redirect()->route('kategori.index')
                            ->with('success', 'Kategori berhasil diperbarui.');
@@ -104,15 +155,39 @@ class KategoriController extends Controller
     public function destroy(string $id)
     {
         try {
-            $kategori = Kategori::findOrFail($id);
+            // Eloquent
+            // $kategori = Kategori::findOrFail($id);
+            // if ($kategori->kodeTindakan()->count() > 0) {
+            //     return redirect()->route('kategori.index')
+            //                      ->with('error', 'Kategori tidak dapat dihapus karena masih digunakan pada kode tindakan terapi.');
+            // }
+            // $kategori->delete();
             
-            // Cek apakah kategori masih digunakan di tabel lain
-            if ($kategori->kodeTindakan()->count() > 0) {
+            // Query Builder
+            // Cek apakah data ada
+            $kategori = DB::table('kategori')
+                ->where('idkategori', $id)
+                ->first();
+
+            if (!$kategori) {
                 return redirect()->route('kategori.index')
-                               ->with('error', 'Kategori tidak dapat dihapus karena masih digunakan pada kode tindakan terapi.');
+                                ->with('error', 'Data kategori tidak ditemukan.');
             }
             
-            $kategori->delete();
+            // Cek apakah kategori masih digunakan di tabel lain
+            $count = DB::table('kode_tindakan_terapi')
+                ->where('idkategori', $id)
+                ->count();
+            
+            if ($count > 0) {
+                return redirect()->route('kategori.index')
+                                 ->with('error', 'Kategori tidak dapat dihapus karena masih digunakan pada kode tindakan terapi.');
+            }
+            
+            // Hapus data
+            DB::table('kategori')
+                ->where('idkategori', $id)
+                ->delete();
             
             return redirect()->route('kategori.index')
                            ->with('success', 'Kategori berhasil dihapus.');
@@ -157,9 +232,21 @@ class KategoriController extends Controller
     protected function createKategori(array $data)
     {
         try {
-            return Kategori::create([
+            // Eloquent
+            // return Kategori::create([
+            //     'nama_kategori' => $this->formatNamaKategori($data['nama_kategori'])
+            // ]);
+            
+            // Query Builder
+            // Generate idkategori baru
+            $maxId = DB::table('kategori')->max('idkategori');
+            $idkategori = $maxId ? $maxId + 1 : 1;
+            $kategori = DB::table('kategori')->insert([
+                'idkategori' => $idkategori,
                 'nama_kategori' => $this->formatNamaKategori($data['nama_kategori'])
             ]);
+            
+            return $kategori;
         } catch (\Exception $e) {
             throw new \Exception("Gagal menyimpan kategori: " . $e->getMessage());
         }

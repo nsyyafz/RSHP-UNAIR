@@ -74,13 +74,18 @@ Route::middleware('isAdministrator')->group(function () {
     Route::delete('/pet/{id}', [PetController::class, 'destroy'])->name('pet.destroy');
     // Role Routes
     Route::get('/role', [RoleController::class, 'index'])->name('role.index');
+    Route::get('/role/create', [RoleController::class, 'create'])->name('role.create');
+    Route::post('/role', [RoleController::class, 'store'])->name('role.store');
+    Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+    Route::get('/role/{id}/edit', [RoleController::class, 'edit'])->name('role.edit');
+    Route::put('/role/{id}', [RoleController::class, 'update'])->name('role.update');
     // User Routes
-    Route::get('/user', [RolesUserController::class, 'index'])->name('user.index');
-    Route::get('/user/create', [RolesUserController::class, 'create'])->name('user.create');
-    Route::post('/user', [RolesUserController::class, 'store'])->name('user.store');
-    Route::get('/user/{id}/edit', [RolesUserController::class, 'edit'])->name('user.edit');
-    Route::put('/user/{id}', [RolesUserController::class, 'update'])->name('user.update');
-    Route::delete('/user/{id}', [RolesUserController::class, 'destroy'])->name('user.destroy');
+    Route::get('/user', [UserController::class, 'index'])->name('user.index');
+    Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
     // Pemilik Routes
     Route::get('/pemilik', [PemilikController::class, 'index'])->name('pemilik.index');
     Route::get('/pemilik/create', [PemilikController::class, 'create'])->name('pemilik.create');

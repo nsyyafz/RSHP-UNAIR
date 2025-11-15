@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Role;
-use App\Models\RoleUser;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+// use App\Models\User;
+// use App\Models\Role;
+// use App\Models\RoleUser;
 
 class RolesUserController extends Controller
 {
@@ -17,8 +17,21 @@ class RolesUserController extends Controller
      */
     public function index()
     {
-        $users = User::with('role')->get();
-        return view('admin.user.index', compact('users'));
+        // Eloquent
+        // $users = User::with('role')->get();
+        
+        // Query Builder
+        $users = DB::table('user')
+            ->leftJoin('role_user', 'user.iduser', '=', 'role_user.iduser')
+            ->leftJoin('role', 'role_user.idrole', '=', 'role.idrole')
+            ->select(
+                'user.*',
+                DB::raw('GROUP_CONCAT(role.nama_role SEPARATOR ", ") as roles')
+            )
+            ->groupBy('user.iduser', 'user.nama', 'user.email', 'user.password', 'user.created_at', 'user.updated_at')
+            ->get();
+        
+        // return view('admin.user.index', compact('users'));
     }
 
     /**
@@ -26,8 +39,15 @@ class RolesUserController extends Controller
      */
     public function create()
     {
-        $roles = Role::select('idrole', 'nama_role')->get();
-        return view('admin.user.create', compact('roles'));
+        // Eloquent
+        // $roles = Role::select('idrole', 'nama_role')->get();
+        
+        // Query Builder
+        $roles = DB::table('role')
+            ->select('idrole', 'nama_role')
+            ->get();
+        
+        // return view('admin.user.create', compact('roles'));
     }
 
     /**
@@ -40,10 +60,10 @@ class RolesUserController extends Controller
             $validatedData = $this->validateUser($request);
             
             // Buat user baru
-            $user = $this->createUser($validatedData);
+            $userId = $this->createUser($validatedData);
             
             // Assign role ke user
-            $this->assignRoles($user, $validatedData['roles']);
+            $this->assignRoles($userId, $validatedData['roles']);
             
             return redirect()->route('user.index')
                            ->with('success', 'User berhasil ditambahkan.');
@@ -59,8 +79,27 @@ class RolesUserController extends Controller
     public function show(string $id)
     {
         try {
-            $user = User::with('role')->findOrFail($id);
-            return view('admin.user.show', compact('user'));
+            // Eloquent
+            // $user = User::with('role')->findOrFail($id);
+            
+            // Query Builder
+            $user = DB::table('user')
+                ->where('iduser', $id)
+                ->first();
+            
+            if (!$user) {
+                return redirect()->route('user.index')
+                                ->with('error', 'Data user tidak ditemukan.');
+            }
+            
+            // Ambil roles user
+            $userRoles = DB::table('role_user')
+                ->join('role', 'role_user.idrole', '=', 'role.idrole')
+                ->where('role_user.iduser', $id)
+                ->select('role.*')
+                ->get();
+            
+            // return view('admin.user.show', compact('user', 'userRoles'));
         } catch (\Exception $e) {
             return redirect()->route('user.index')
                            ->with('error', 'Data user tidak ditemukan.');
@@ -73,11 +112,32 @@ class RolesUserController extends Controller
     public function edit(string $id)
     {
         try {
-            $user = User::with('role')->findOrFail($id);
-            $roles = Role::select('idrole', 'nama_role')->get();
-            $userRoles = $user->role->pluck('idrole')->toArray();
+            // Eloquent
+            // $user = User::with('role')->findOrFail($id);
+            // $roles = Role::select('idrole', 'nama_role')->get();
+            // $userRoles = $user->role->pluck('idrole')->toArray();
             
-            return view('admin.user.edit', compact('user', 'roles', 'userRoles'));
+            // Query Builder
+            $user = DB::table('user')
+                ->where('iduser', $id)
+                ->first();
+            
+            if (!$user) {
+                return redirect()->route('user.index')
+                                ->with('error', 'Data user tidak ditemukan.');
+            }
+            
+            $roles = DB::table('role')
+                ->select('idrole', 'nama_role')
+                ->get();
+            
+            // Ambil role IDs yang dimiliki user
+            $userRoles = DB::table('role_user')
+                ->where('iduser', $id)
+                ->pluck('idrole')
+                ->toArray();
+            
+            // return view('admin.user.edit', compact('user', 'roles', 'userRoles'));
         } catch (\Exception $e) {
             return redirect()->route('user.index')
                            ->with('error', 'Data user tidak ditemukan.');
@@ -90,8 +150,22 @@ class RolesUserController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            // Cari data user
-            $user = User::findOrFail($id);
+            // Eloquent
+            // $user = User::findOrFail($id);
+            // $user->update($updateData);
+            // $user->role()->detach();
+            // $this->assignRoles($user, $validatedData['roles']);
+            
+            // Query Builder
+            // Cek apakah user ada
+            $user = DB::table('user')
+                ->where('iduser', $id)
+                ->first();
+
+            if (!$user) {
+                return redirect()->route('user.index')
+                                ->with('error', 'Data user tidak ditemukan.');
+            }
             
             // Validasi input dengan mengecualikan ID yang sedang diedit
             $validatedData = $this->validateUser($request, $id);
@@ -107,11 +181,13 @@ class RolesUserController extends Controller
                 $updateData['password'] = Hash::make($validatedData['password']);
             }
             
-            $user->update($updateData);
+            DB::table('user')
+                ->where('iduser', $id)
+                ->update($updateData);
             
             // Update roles
             if (isset($validatedData['roles'])) {
-                $this->syncRoles($user, $validatedData['roles']);
+                $this->syncRoles($id, $validatedData['roles']);
             }
             
             return redirect()->route('user.index')
@@ -128,19 +204,45 @@ class RolesUserController extends Controller
     public function destroy(string $id)
     {
         try {
-            $user = User::findOrFail($id);
+            // Eloquent
+            // $user = User::findOrFail($id);
+            // if ($user->Pemilik()->exists()) {
+            //     return redirect()->route('user.index')
+            //                    ->with('error', 'User tidak dapat dihapus karena memiliki data pemilik terkait.');
+            // }
+            // $user->role()->detach();
+            // $user->delete();
             
-            // Cek apakah user memiliki data terkait (opsional)
-            if ($user->Pemilik()->exists()) {
+            // Query Builder
+            // Cek apakah user ada
+            $user = DB::table('user')
+                ->where('iduser', $id)
+                ->first();
+
+            if (!$user) {
+                return redirect()->route('user.index')
+                                ->with('error', 'Data user tidak ditemukan.');
+            }
+            
+            // Cek apakah user memiliki data pet (sebagai pemilik)
+            $petCount = DB::table('pet')
+                ->where('idpemilik', $id)
+                ->count();
+            
+            if ($petCount > 0) {
                 return redirect()->route('user.index')
                                ->with('error', 'User tidak dapat dihapus karena memiliki data pemilik terkait.');
             }
             
             // Hapus role_user terlebih dahulu
-            $user->role()->detach();
+            DB::table('role_user')
+                ->where('iduser', $id)
+                ->delete();
             
             // Hapus user
-            $user->delete();
+            DB::table('user')
+                ->where('iduser', $id)
+                ->delete();
             
             return redirect()->route('user.index')
                            ->with('success', 'User berhasil dihapus.');
@@ -216,11 +318,23 @@ class RolesUserController extends Controller
     protected function createUser(array $data)
     {
         try {
-            return User::create([
+            // Eloquent
+            // return User::create([
+            //     'nama' => $this->formatNama($data['nama']),
+            //     'email' => strtolower($data['email']),
+            //     'password' => Hash::make($data['password'])
+            // ]);
+            
+            // Query Builder
+            $userId = DB::table('user')->insertGetId([
                 'nama' => $this->formatNama($data['nama']),
                 'email' => strtolower($data['email']),
-                'password' => Hash::make($data['password'])
+                'password' => Hash::make($data['password']),
+                'created_at' => now(),
+                'updated_at' => now()
             ]);
+            
+            return $userId;
         } catch (\Exception $e) {
             throw new \Exception("Gagal menyimpan user: " . $e->getMessage());
         }
@@ -229,13 +343,24 @@ class RolesUserController extends Controller
     /**
      * Helper untuk assign roles ke user (saat create)
      */
-    protected function assignRoles(User $user, array $roleIds)
+    protected function assignRoles($userId, array $roleIds)
     {
         try {
+            // Eloquent
+            // foreach ($roleIds as $roleId) {
+            //     RoleUser::create([
+            //         'iduser' => $user->iduser,
+            //         'idrole' => $roleId
+            //     ]);
+            // }
+            
+            // Query Builder
             foreach ($roleIds as $roleId) {
-                RoleUser::create([
-                    'iduser' => $user->iduser,
-                    'idrole' => $roleId
+                DB::table('role_user')->insert([
+                    'iduser' => $userId,
+                    'idrole' => $roleId,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
             }
         } catch (\Exception $e) {
@@ -246,14 +371,21 @@ class RolesUserController extends Controller
     /**
      * Helper untuk sync roles (saat update)
      */
-    protected function syncRoles(User $user, array $roleIds)
+    protected function syncRoles($userId, array $roleIds)
     {
         try {
+            // Eloquent
+            // $user->role()->detach();
+            // $this->assignRoles($user, $roleIds);
+            
+            // Query Builder
             // Hapus role yang lama
-            $user->role()->detach();
+            DB::table('role_user')
+                ->where('iduser', $userId)
+                ->delete();
             
             // Assign role yang baru
-            $this->assignRoles($user, $roleIds);
+            $this->assignRoles($userId, $roleIds);
         } catch (\Exception $e) {
             throw new \Exception("Gagal update role: " . $e->getMessage());
         }

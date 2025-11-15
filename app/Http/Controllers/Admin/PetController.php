@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Pet;
-use App\Models\Pemilik;
-use App\Models\RasHewan;
-use App\Models\JenisHewan;
+use Illuminate\Support\Facades\DB;
+// use App\Models\Pet;
+// use App\Models\Pemilik;
+// use App\Models\RasHewan;
+// use App\Models\JenisHewan;
 
 class PetController extends Controller
 {
@@ -16,7 +17,23 @@ class PetController extends Controller
      */
     public function index()
     {
-        $pets = Pet::with(['pemilik.user', 'rasHewan.jenisHewan'])->get();
+        // Eloquent
+        // $pets = Pet::with(['pemilik.user', 'rasHewan.jenisHewan'])->get();
+        
+        // Query Builder
+        $pets = DB::table('pet')
+            ->leftJoin('pemilik', 'pet.idpemilik', '=', 'pemilik.idpemilik')
+            ->leftJoin('user', 'pemilik.iduser', '=', 'user.iduser')
+            ->leftJoin('ras_hewan', 'pet.idras_hewan', '=', 'ras_hewan.idras_hewan')
+            ->leftJoin('jenis_hewan', 'ras_hewan.idjenis_hewan', '=', 'jenis_hewan.idjenis_hewan')
+            ->select(
+                'pet.*',
+                'user.nama as nama_pemilik',
+                'ras_hewan.nama_ras',
+                'jenis_hewan.nama_jenis_hewan'
+            )
+            ->get();
+        
         return view('admin.pet.index', compact('pets'));
     }
 
@@ -25,9 +42,23 @@ class PetController extends Controller
      */
     public function create()
     {
-        $pemiliks = Pemilik::with('user')->get();
-        $jenisHewans = JenisHewan::all();
-        $rasHewans = RasHewan::with('jenisHewan')->get();
+        // Eloquent
+        // $pemiliks = Pemilik::with('user')->get();
+        // $jenisHewans = JenisHewan::all();
+        // $rasHewans = RasHewan::with('jenisHewan')->get();
+        
+        // Query Builder
+        $pemiliks = DB::table('pemilik')
+            ->leftJoin('user', 'pemilik.iduser', '=', 'user.iduser')
+            ->select('pemilik.idpemilik', 'user.nama as nama_user', 'pemilik.no_wa')
+            ->get();
+        
+        $jenisHewans = DB::table('jenis_hewan')->get();
+        
+        $rasHewans = DB::table('ras_hewan')
+            ->leftJoin('jenis_hewan', 'ras_hewan.idjenis_hewan', '=', 'jenis_hewan.idjenis_hewan')
+            ->select('ras_hewan.*', 'jenis_hewan.nama_jenis_hewan')
+            ->get();
         
         return view('admin.pet.create', compact('pemiliks', 'jenisHewans', 'rasHewans'));
     }
@@ -58,7 +89,31 @@ class PetController extends Controller
     public function show(string $id)
     {
         try {
-            $pet = Pet::with(['pemilik.user', 'rasHewan.jenisHewan'])->findOrFail($id);
+            // Eloquent
+            // $pet = Pet::with(['pemilik.user', 'rasHewan.jenisHewan'])->findOrFail($id);
+            
+            // Query Builder
+            $pet = DB::table('pet')
+                ->leftJoin('pemilik', 'pet.idpemilik', '=', 'pemilik.idpemilik')
+                ->leftJoin('user', 'pemilik.iduser', '=', 'user.iduser')
+                ->leftJoin('ras_hewan', 'pet.idras_hewan', '=', 'ras_hewan.idras_hewan')
+                ->leftJoin('jenis_hewan', 'ras_hewan.idjenis_hewan', '=', 'jenis_hewan.idjenis_hewan')
+                ->select(
+                    'pet.*',
+                    'user.nama as nama_pemilik',
+                    'pemilik.no_wa',
+                    'pemilik.alamat',
+                    'ras_hewan.nama_ras_hewan',
+                    'jenis_hewan.nama_jenis_hewan'
+                )
+                ->where('pet.idpet', $id)
+                ->first();
+            
+            if (!$pet) {
+                return redirect()->route('pet.index')
+                                ->with('error', 'Data hewan peliharaan tidak ditemukan.');
+            }
+            
             return view('admin.pet.show', compact('pet'));
         } catch (\Exception $e) {
             return redirect()->route('pet.index')
@@ -72,10 +127,33 @@ class PetController extends Controller
     public function edit(string $id)
     {
         try {
-            $pet = Pet::findOrFail($id);
-            $pemiliks = Pemilik::with('user')->get();
-            $jenisHewans = JenisHewan::all();
-            $rasHewans = RasHewan::with('jenisHewan')->get();
+            // Eloquent
+            // $pet = Pet::findOrFail($id);
+            // $pemiliks = Pemilik::with('user')->get();
+            // $jenisHewans = JenisHewan::all();
+            // $rasHewans = RasHewan::with('jenisHewan')->get();
+            
+            // Query Builder
+            $pet = DB::table('pet')
+                ->where('idpet', $id)
+                ->first();
+            
+            if (!$pet) {
+                return redirect()->route('pet.index')
+                                ->with('error', 'Data hewan peliharaan tidak ditemukan.');
+            }
+            
+            $pemiliks = DB::table('pemilik')
+                ->leftJoin('user', 'pemilik.iduser', '=', 'user.iduser')
+                ->select('pemilik.idpemilik', 'user.nama as nama_user', 'pemilik.no_wa')
+                ->get();
+            
+            $jenisHewans = DB::table('jenis_hewan')->get();
+            
+            $rasHewans = DB::table('ras_hewan')
+                ->leftJoin('jenis_hewan', 'ras_hewan.idjenis_hewan', '=', 'jenis_hewan.idjenis_hewan')
+                ->select('ras_hewan.*', 'jenis_hewan.nama_jenis_hewan')
+                ->get();
             
             return view('admin.pet.edit', compact('pet', 'pemiliks', 'jenisHewans', 'rasHewans'));
         } catch (\Exception $e) {
@@ -90,21 +168,42 @@ class PetController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            // Cari data pet
-            $pet = Pet::findOrFail($id);
+            // Eloquent
+            // $pet = Pet::findOrFail($id);
+            // $pet->update([
+            //     'nama' => $this->formatNama($validatedData['nama']),
+            //     'tanggal_lahir' => $validatedData['tanggal_lahir'],
+            //     'warna_tanda' => $this->formatWarnaTanda($validatedData['warna_tanda']),
+            //     'jenis_kelamin' => $this->convertJenisKelamin($validatedData['jenis_kelamin']),
+            //     'idpemilik' => $validatedData['idpemilik'],
+            //     'idras_hewan' => $validatedData['idras_hewan']
+            // ]);
+            
+            // Query Builder
+            // Cek apakah data ada
+            $pet = DB::table('pet')
+                ->where('idpet', $id)
+                ->first();
+
+            if (!$pet) {
+                return redirect()->route('pet.index')
+                                ->with('error', 'Data hewan peliharaan tidak ditemukan.');
+            }
             
             // Validasi input
             $validatedData = $this->validatePet($request, $id);
             
             // Update data
-            $pet->update([
-                'nama' => $this->formatNama($validatedData['nama']),
-                'tanggal_lahir' => $validatedData['tanggal_lahir'],
-                'warna_tanda' => $this->formatWarnaTanda($validatedData['warna_tanda']),
-                'jenis_kelamin' => $this->convertJenisKelamin($validatedData['jenis_kelamin']),
-                'idpemilik' => $validatedData['idpemilik'],
-                'idras_hewan' => $validatedData['idras_hewan']
-            ]);
+            DB::table('pet')
+                ->where('idpet', $id)
+                ->update([
+                    'nama' => $this->formatNama($validatedData['nama']),
+                    'tanggal_lahir' => $validatedData['tanggal_lahir'],
+                    'warna_tanda' => $this->formatWarnaTanda($validatedData['warna_tanda']),
+                    'jenis_kelamin' => $this->convertJenisKelamin($validatedData['jenis_kelamin']),
+                    'idpemilik' => $validatedData['idpemilik'],
+                    'idras_hewan' => $validatedData['idras_hewan']
+                ]);
             
             return redirect()->route('pet.index')
                            ->with('success', 'Data hewan peliharaan berhasil diperbarui.');
@@ -120,15 +219,37 @@ class PetController extends Controller
     public function destroy(string $id)
     {
         try {
-            $pet = Pet::findOrFail($id);
-            
-            // Cek apakah pet memiliki rekam medis (opsional)
+            // Eloquent
+            // $pet = Pet::findOrFail($id);
             // if ($pet->rekamMedis()->count() > 0) {
             //     return redirect()->route('pet.index')
             //                      ->with('error', 'Hewan tidak dapat dihapus karena memiliki rekam medis.');
             // }
+            // $pet->delete();
             
-            $pet->delete();
+            // Query Builder
+            // Cek apakah data ada
+            $pet = DB::table('pet')
+                ->where('idpet', $id)
+                ->first();
+
+            if (!$pet) {
+                return redirect()->route('pet.index')
+                                ->with('error', 'Data hewan peliharaan tidak ditemukan.');
+            }
+            
+            // Cek apakah pet memiliki rekam medis (opsional)
+            // Uncomment jika ada tabel rekam medis
+            // $count = DB::table('rekam_medis')->where('idpet', $id)->count();
+            // if ($count > 0) {
+            //     return redirect()->route('pet.index')
+            //                      ->with('error', 'Hewan tidak dapat dihapus karena memiliki rekam medis.');
+            // }
+            
+            // Hapus data
+            DB::table('pet')
+                ->where('idpet', $id)
+                ->delete();
             
             return redirect()->route('pet.index')
                            ->with('success', 'Data hewan peliharaan berhasil dihapus.');
@@ -202,7 +323,22 @@ class PetController extends Controller
     protected function createPet(array $data)
     {
         try {
-            return Pet::create([
+            // Eloquent
+            // return Pet::create([
+            //     'nama' => $this->formatNama($data['nama']),
+            //     'tanggal_lahir' => $data['tanggal_lahir'],
+            //     'warna_tanda' => $this->formatWarnaTanda($data['warna_tanda']),
+            //     'jenis_kelamin' => $this->convertJenisKelamin($data['jenis_kelamin']),
+            //     'idpemilik' => $data['idpemilik'],
+            //     'idras_hewan' => $data['idras_hewan']
+            // ]);
+            
+            // Query Builder
+            // Generate idpet baru
+            $maxId = DB::table('pet')->max('idpet');
+            $idpet = $maxId ? $maxId + 1 : 1;
+            $pet = DB::table('pet')->insert([
+                'idpet' => $idpet,
                 'nama' => $this->formatNama($data['nama']),
                 'tanggal_lahir' => $data['tanggal_lahir'],
                 'warna_tanda' => $this->formatWarnaTanda($data['warna_tanda']),
@@ -210,6 +346,8 @@ class PetController extends Controller
                 'idpemilik' => $data['idpemilik'],
                 'idras_hewan' => $data['idras_hewan']
             ]);
+            
+            return $pet;
         } catch (\Exception $e) {
             throw new \Exception("Gagal menyimpan hewan peliharaan: " . $e->getMessage());
         }

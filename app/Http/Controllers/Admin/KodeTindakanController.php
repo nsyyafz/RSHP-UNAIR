@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\KodeTindakan;
-use App\Models\Kategori;
-use App\Models\KategoriKlinis;
+use Illuminate\Support\Facades\DB;
+// use App\Models\KodeTindakan;
+// use App\Models\Kategori;
+// use App\Models\KategoriKlinis;
 
 class KodeTindakanController extends Controller
 {
@@ -15,7 +16,16 @@ class KodeTindakanController extends Controller
      */
     public function index()
     {
-        $kodeTindakans = KodeTindakan::with(['kategori', 'kategoriKlinis'])->get();
+        // Eloquent
+        // $kodeTindakans = KodeTindakan::with(['kategori', 'kategoriKlinis'])->get();
+        
+        // Query Builder
+        $kodeTindakans = DB::table('kode_tindakan_terapi')
+            ->leftJoin('kategori', 'kode_tindakan_terapi.idkategori', '=', 'kategori.idkategori')
+            ->leftJoin('kategori_klinis', 'kode_tindakan_terapi.idkategori_klinis', '=', 'kategori_klinis.idkategori_klinis')
+            ->select('kode_tindakan_terapi.*', 'kategori.nama_kategori', 'kategori_klinis.nama_kategori_klinis')
+            ->get();
+        
         return view('admin.kode-tindakan.index', compact('kodeTindakans'));
     }
 
@@ -24,8 +34,19 @@ class KodeTindakanController extends Controller
      */
     public function create()
     {
-        $kategoris = Kategori::select('idkategori', 'nama_kategori')->get();
-        $kategoriKlinis = KategoriKlinis::select('idkategori_klinis', 'nama_kategori_klinis')->get();
+        // Eloquent
+        // $kategoris = Kategori::select('idkategori', 'nama_kategori')->get();
+        // $kategoriKlinis = KategoriKlinis::select('idkategori_klinis', 'nama_kategori_klinis')->get();
+        
+        // Query Builder
+        $kategoris = DB::table('kategori')
+            ->select('idkategori', 'nama_kategori')
+            ->get();
+        
+        $kategoriKlinis = DB::table('kategori_klinis')
+            ->select('idkategori_klinis', 'nama_kategori_klinis')
+            ->get();
+        
         return view('admin.kode-tindakan.create', compact('kategoris', 'kategoriKlinis'));
     }
 
@@ -55,7 +76,22 @@ class KodeTindakanController extends Controller
     public function show(string $id)
     {
         try {
-            $kodeTindakan = KodeTindakan::with(['kategori', 'kategoriKlinis'])->findOrFail($id);
+            // Eloquent
+            // $kodeTindakan = KodeTindakan::with(['kategori', 'kategoriKlinis'])->findOrFail($id);
+            
+            // Query Builder
+            $kodeTindakan = DB::table('kode_tindakan_terapi')
+                ->leftJoin('kategori', 'kode_tindakan_terapi.idkategori', '=', 'kategori.idkategori')
+                ->leftJoin('kategori_klinis', 'kode_tindakan_terapi.idkategori_klinis', '=', 'kategori_klinis.idkategori_klinis')
+                ->select('kode_tindakan_terapi.*', 'kategori.nama_kategori', 'kategori_klinis.nama_kategori_klinis')
+                ->where('kode_tindakan_terapi.idkode_tindakan_terapi', $id)
+                ->first();
+            
+            if (!$kodeTindakan) {
+                return redirect()->route('kode-tindakan.index')
+                                ->with('error', 'Data kode tindakan terapi tidak ditemukan.');
+            }
+            
             return view('admin.kode-tindakan.show', compact('kodeTindakan'));
         } catch (\Exception $e) {
             return redirect()->route('kode-tindakan.index')
@@ -69,9 +105,28 @@ class KodeTindakanController extends Controller
     public function edit(string $id)
     {
         try {
-            $kodeTindakan = KodeTindakan::findOrFail($id);
-            $kategoris = Kategori::select('idkategori', 'nama_kategori')->get();
-            $kategoriKlinis = KategoriKlinis::select('idkategori_klinis', 'nama_kategori_klinis')->get();
+            // Eloquent
+            // $kodeTindakan = KodeTindakan::findOrFail($id);
+            // $kategoris = Kategori::select('idkategori', 'nama_kategori')->get();
+            // $kategoriKlinis = KategoriKlinis::select('idkategori_klinis', 'nama_kategori_klinis')->get();
+            
+            // Query Builder
+            $kodeTindakan = DB::table('kode_tindakan_terapi')
+                ->where('idkode_tindakan_terapi', $id)
+                ->first();
+            
+            if (!$kodeTindakan) {
+                return redirect()->route('kode-tindakan.index')
+                                ->with('error', 'Data kode tindakan terapi tidak ditemukan.');
+            }
+            
+            $kategoris = DB::table('kategori')
+                ->select('idkategori', 'nama_kategori')
+                ->get();
+            
+            $kategoriKlinis = DB::table('kategori_klinis')
+                ->select('idkategori_klinis', 'nama_kategori_klinis')
+                ->get();
             
             return view('admin.kode-tindakan.edit', compact('kodeTindakan', 'kategoris', 'kategoriKlinis'));
         } catch (\Exception $e) {
@@ -86,19 +141,38 @@ class KodeTindakanController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            // Cari data kode tindakan
-            $kodeTindakan = KodeTindakan::findOrFail($id);
+            // Eloquent
+            // $kodeTindakan = KodeTindakan::findOrFail($id);
+            // $kodeTindakan->update([
+            //     'kode' => strtoupper($validatedData['kode']),
+            //     'deskripsi_tindakan_terapi' => $this->formatDeskripsi($validatedData['deskripsi_tindakan_terapi']),
+            //     'idkategori' => $validatedData['idkategori'],
+            //     'idkategori_klinis' => $validatedData['idkategori_klinis']
+            // ]);
+            
+            // Query Builder
+            // Cek apakah data ada
+            $kodeTindakan = DB::table('kode_tindakan_terapi')
+                ->where('idkode_tindakan_terapi', $id)
+                ->first();
+
+            if (!$kodeTindakan) {
+                return redirect()->route('kode-tindakan.index')
+                                ->with('error', 'Data kode tindakan terapi tidak ditemukan.');
+            }
             
             // Validasi input dengan mengecualikan ID yang sedang diedit
             $validatedData = $this->validateKodeTindakan($request, $id);
             
             // Update data
-            $kodeTindakan->update([
-                'kode' => strtoupper($validatedData['kode']),
-                'deskripsi_tindakan_terapi' => $this->formatDeskripsi($validatedData['deskripsi_tindakan_terapi']),
-                'idkategori' => $validatedData['idkategori'],
-                'idkategori_klinis' => $validatedData['idkategori_klinis']
-            ]);
+            DB::table('kode_tindakan_terapi')
+                ->where('idkode_tindakan_terapi', $id)
+                ->update([
+                    'kode' => strtoupper($validatedData['kode']),
+                    'deskripsi_tindakan_terapi' => $this->formatDeskripsi($validatedData['deskripsi_tindakan_terapi']),
+                    'idkategori' => $validatedData['idkategori'],
+                    'idkategori_klinis' => $validatedData['idkategori_klinis']
+                ]);
             
             return redirect()->route('kode-tindakan.index')
                            ->with('success', 'Kode tindakan terapi berhasil diperbarui.');
@@ -114,16 +188,37 @@ class KodeTindakanController extends Controller
     public function destroy(string $id)
     {
         try {
-            $kodeTindakan = KodeTindakan::findOrFail($id);
-            
-            // Cek apakah kode tindakan masih digunakan di tabel lain (opsional)
-            // Uncomment jika ada relasi dengan tabel lain
+            // Eloquent
+            // $kodeTindakan = KodeTindakan::findOrFail($id);
             // if ($kodeTindakan->rekamMedis()->count() > 0) {
             //     return redirect()->route('kode-tindakan.index')
             //                      ->with('error', 'Kode tindakan tidak dapat dihapus karena masih digunakan.');
             // }
+            // $kodeTindakan->delete();
             
-            $kodeTindakan->delete();
+            // Query Builder
+            // Cek apakah data ada
+            $kodeTindakan = DB::table('kode_tindakan_terapi')
+                ->where('idkode_tindakan_terapi', $id)
+                ->first();
+
+            if (!$kodeTindakan) {
+                return redirect()->route('kode-tindakan.index')
+                                ->with('error', 'Data kode tindakan terapi tidak ditemukan.');
+            }
+            
+            // Cek apakah kode tindakan masih digunakan di tabel lain (opsional)
+            // Uncomment jika ada relasi dengan tabel rekam medis
+            // $count = DB::table('rekam_medis')->where('idkode_tindakan_terapi', $id)->count();
+            // if ($count > 0) {
+            //     return redirect()->route('kode-tindakan.index')
+            //                      ->with('error', 'Kode tindakan tidak dapat dihapus karena masih digunakan.');
+            // }
+            
+            // Hapus data
+            DB::table('kode_tindakan_terapi')
+                ->where('idkode_tindakan_terapi', $id)
+                ->delete();
             
             return redirect()->route('kode-tindakan.index')
                            ->with('success', 'Kode tindakan terapi berhasil dihapus.');
@@ -194,12 +289,26 @@ class KodeTindakanController extends Controller
     protected function createKodeTindakan(array $data)
     {
         try {
-            return KodeTindakan::create([
+            // Eloquent
+            // return KodeTindakan::create([
+            //     'kode' => strtoupper($data['kode']),
+            //     'deskripsi_tindakan_terapi' => $this->formatDeskripsi($data['deskripsi_tindakan_terapi']),
+            //     'idkategori' => $data['idkategori'],
+            //     'idkategori_klinis' => $data['idkategori_klinis']
+            // ]);
+            
+            // Query Builder
+            // Generate idkode_tindakan_terapi baru
+            $maxId = DB::table('kode_tindakan_terapi')->max('idkode_tindakan_terapi');
+            $idkode_tindakan_terapi = $maxId ? $maxId + 1 : 1;
+            $kodeTindakan = DB::table('kode_tindakan_terapi')->insert([
                 'kode' => strtoupper($data['kode']),
                 'deskripsi_tindakan_terapi' => $this->formatDeskripsi($data['deskripsi_tindakan_terapi']),
                 'idkategori' => $data['idkategori'],
                 'idkategori_klinis' => $data['idkategori_klinis']
             ]);
+            
+            return $kodeTindakan;
         } catch (\Exception $e) {
             throw new \Exception("Gagal menyimpan kode tindakan: " . $e->getMessage());
         }

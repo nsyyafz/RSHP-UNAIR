@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\KategoriKlinis;
+use Illuminate\Support\Facades\DB;
+// use App\Models\KategoriKlinis;
 
 class KategoriKlinisController extends Controller
 {
@@ -13,7 +14,12 @@ class KategoriKlinisController extends Controller
      */
     public function index()
     {
-        $kategoriKlinis = KategoriKlinis::all();
+        // Eloquent
+        // $kategoriKlinis = KategoriKlinis::all();
+        
+        // Query Builder
+        $kategoriKlinis = DB::table('kategori_klinis')->get();
+        
         return view('admin.kategori-klinis.index', compact('kategoriKlinis'));
     }
 
@@ -51,7 +57,19 @@ class KategoriKlinisController extends Controller
     public function show(string $id)
     {
         try {
-            $kategoriKlinis = KategoriKlinis::findOrFail($id);
+            // Eloquent
+            // $kategoriKlinis = KategoriKlinis::findOrFail($id);
+            
+            // Query Builder
+            $kategoriKlinis = DB::table('kategori_klinis')
+                ->where('idkategori_klinis', $id)
+                ->first();
+            
+            if (!$kategoriKlinis) {
+                return redirect()->route('kategori-klinis.index')
+                                ->with('error', 'Data kategori klinis tidak ditemukan.');
+            }
+            
             return view('admin.kategori-klinis.show', compact('kategoriKlinis'));
         } catch (\Exception $e) {
             return redirect()->route('kategori-klinis.index')
@@ -65,7 +83,19 @@ class KategoriKlinisController extends Controller
     public function edit(string $id)
     {
         try {
-            $kategoriKlinis = KategoriKlinis::findOrFail($id);
+            // Eloquent
+            // $kategoriKlinis = KategoriKlinis::findOrFail($id);
+            
+            // Query Builder
+            $kategoriKlinis = DB::table('kategori_klinis')
+                ->where('idkategori_klinis', $id)
+                ->first();
+            
+            if (!$kategoriKlinis) {
+                return redirect()->route('kategori-klinis.index')
+                                ->with('error', 'Data kategori klinis tidak ditemukan.');
+            }
+            
             return view('admin.kategori-klinis.edit', compact('kategoriKlinis'));
         } catch (\Exception $e) {
             return redirect()->route('kategori-klinis.index')
@@ -79,16 +109,32 @@ class KategoriKlinisController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            // Cari data kategori klinis
-            $kategoriKlinis = KategoriKlinis::findOrFail($id);
+            // Eloquent
+            // $kategoriKlinis = KategoriKlinis::findOrFail($id);
+            // $kategoriKlinis->update([
+            //     'nama_kategori_klinis' => $this->formatNamaKategoriKlinis($validatedData['nama_kategori_klinis'])
+            // ]);
+            
+            // Query Builder
+            // Cek apakah data ada
+            $kategoriKlinis = DB::table('kategori_klinis')
+                ->where('idkategori_klinis', $id)
+                ->first();
+
+            if (!$kategoriKlinis) {
+                return redirect()->route('kategori-klinis.index')
+                                ->with('error', 'Data kategori klinis tidak ditemukan.');
+            }
             
             // Validasi input dengan mengecualikan ID yang sedang diedit
             $validatedData = $this->validateKategoriKlinis($request, $id);
             
             // Update data
-            $kategoriKlinis->update([
-                'nama_kategori_klinis' => $this->formatNamaKategoriKlinis($validatedData['nama_kategori_klinis'])
-            ]);
+            DB::table('kategori_klinis')
+                ->where('idkategori_klinis', $id)
+                ->update([
+                    'nama_kategori_klinis' => $this->formatNamaKategoriKlinis($validatedData['nama_kategori_klinis'])
+                ]);
             
             return redirect()->route('kategori-klinis.index')
                            ->with('success', 'Kategori klinis berhasil diperbarui.');
@@ -104,16 +150,39 @@ class KategoriKlinisController extends Controller
     public function destroy(string $id)
     {
         try {
-            $kategoriKlinis = KategoriKlinis::findOrFail($id);
-            
-            // Cek apakah kategori klinis masih digunakan di tabel lain (opsional)
-            // Uncomment jika ada relasi dengan tabel lain
+            // Eloquent
+            // $kategoriKlinis = KategoriKlinis::findOrFail($id);
             // if ($kategoriKlinis->relatedTable()->count() > 0) {
             //     return redirect()->route('kategori-klinis.index')
             //                      ->with('error', 'Kategori klinis tidak dapat dihapus karena masih digunakan.');
             // }
+            // $kategoriKlinis->delete();
             
-            $kategoriKlinis->delete();
+            // Query Builder
+            // Cek apakah data ada
+            $kategoriKlinis = DB::table('kategori_klinis')
+                ->where('idkategori_klinis', $id)
+                ->first();
+
+            if (!$kategoriKlinis) {
+                return redirect()->route('kategori-klinis.index')
+                                ->with('error', 'Data kategori klinis tidak ditemukan.');
+            }
+            
+            // Cek apakah kategori klinis masih digunakan di tabel lain (opsional)
+            $count = DB::table('kode_tindakan_terapi')
+                ->where('idkategori_klinis', $id)
+                ->count();
+            
+            if ($count > 0) {
+                return redirect()->route('kategori-klinis.index')
+                                 ->with('error', 'Kategori klinis tidak dapat dihapus karena masih digunakan.');
+            }
+            
+            // Hapus data
+            DB::table('kategori_klinis')
+                ->where('idkategori_klinis', $id)
+                ->delete();
             
             return redirect()->route('kategori-klinis.index')
                            ->with('success', 'Kategori klinis berhasil dihapus.');
@@ -158,9 +227,21 @@ class KategoriKlinisController extends Controller
     protected function createKategoriKlinis(array $data)
     {
         try {
-            return KategoriKlinis::create([
+            // Eloquent
+            // return KategoriKlinis::create([
+            //     'nama_kategori_klinis' => $this->formatNamaKategoriKlinis($data['nama_kategori_klinis'])
+            // ]);
+            
+            // Query Builder
+            // Generate idkategori_klinis baru
+            $maxId = DB::table('kategori_klinis')->max('idkategori_klinis');
+            $idkategori_klinis = $maxId ? $maxId + 1 : 1;
+            $kategoriKlinis = DB::table('kategori_klinis')->insert([
+                'idkategori_klinis' => $idkategori_klinis,
                 'nama_kategori_klinis' => $this->formatNamaKategoriKlinis($data['nama_kategori_klinis'])
             ]);
+            
+            return $kategoriKlinis;
         } catch (\Exception $e) {
             throw new \Exception("Gagal menyimpan kategori klinis: " . $e->getMessage());
         }

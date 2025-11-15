@@ -1,367 +1,265 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - RSHP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-        }
+@extends('layouts.lte.main')
 
-        /* Navbar Styles */
-        .navbar-custom {
-            background: linear-gradient(135deg, #003366 0%, #005599 100%);
-            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);
-            padding: 1rem 0;
-        }
-        
-        .navbar-custom .navbar-brand {
-            color: white;
-            font-weight: 700;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .navbar-custom .navbar-brand:hover {
-            color: #ffd700;
-            transform: scale(1.05);
-        }
-        
-        .navbar-custom .nav-link {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            transition: all 0.3s ease;
-            border-radius: 5px;
-        }
-        
-        .navbar-custom .nav-link:hover {
-            color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-        }
-        
-        .navbar-custom .dropdown-menu {
-            background: white;
-            border: none;
-            box-shadow: 0 5px 20px rgba(0, 51, 102, 0.2);
-            border-radius: 10px;
-            padding: 0.5rem 0;
-            margin-top: 0.5rem;
-        }
-        
-        .navbar-custom .dropdown-item {
-            color: #003366;
-            padding: 0.7rem 1.5rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .navbar-custom .dropdown-item:hover {
-            background: linear-gradient(90deg, rgba(0, 51, 102, 0.1) 0%, transparent 100%);
-            color: #005599;
-            padding-left: 2rem;
-        }
-        
-        .navbar-custom .dropdown-item i {
-            margin-right: 0.5rem;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .navbar-custom .dropdown-toggle::after {
-            margin-left: 0.5rem;
-        }
+@section('content')
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <!--begin::Container-->
+        <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Dashboard RSHP</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                    </ol>
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::App Content Header-->
 
-        /* Hero Section */
-        .hero-admin {
-            background: linear-gradient(135deg, #003366 0%, #005599 70%, #ffd700 100%);
-            color: white;
-            padding: 3rem 0;
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-admin::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        
-        .hero-admin h1 {
-            font-weight: 700;
-            font-size: 2.5rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 2;
-        }
-        
-        .hero-admin p {
-            font-size: 1.1rem;
-            opacity: 0.95;
-            position: relative;
-            z-index: 2;
-        }
+    <!--begin::App Content-->
+    <div class="app-content">
+        <!--begin::Container-->
+        <div class="container-fluid">
+            <!--begin::Row - Info boxes-->
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon text-bg-primary shadow-sm">
+                            <i class="bi bi-heart-fill"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Total Pet</span>
+                            <span class="info-box-number">{{ $jumlahPet }}</span>
+                        </div>
+                    </div>
+                </div>
 
-        /* Stats Cards */
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.1);
-            transition: all 0.3s ease;
-            border: none;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #003366, #ffd700);
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
-        }
-        
-        .stat-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 51, 102, 0.2);
-        }
-        
-        .stat-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: inline-block;
-            transition: transform 0.4s ease;
-        }
-        
-        .stat-card:hover .stat-icon {
-            transform: scale(1.2) rotate(5deg);
-        }
-        
-        .stat-title {
-            color: #003366;
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-number {
-            color: #003366;
-            font-weight: 800;
-            font-size: 2.5rem;
-            display: block;
-        }
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon text-bg-success shadow-sm">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Total Pemilik</span>
+                            <span class="info-box-number">{{ $jumlahPemilik }}</span>
+                        </div>
+                    </div>
+                </div>
 
-        /* Responsive */
-        @media (max-width: 991.98px) {
-            .hero-admin h1 {
-                font-size: 2rem;
-            }
-            
-            .stat-card {
-                margin-bottom: 1rem;
-            }
-        }
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon text-bg-warning shadow-sm">
+                            <i class="bi bi-clipboard2-pulse-fill"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Rekam Medis</span>
+                            <span class="info-box-number">{{ $jumlahRekam }}</span>
+                        </div>
+                    </div>
+                </div>
 
-        /* Animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .stat-card {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-        
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
-    </style>
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-custom">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-heart-pulse-fill"></i> RSHP Admin
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.dashboard') }}">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                    </li>
-                    
-                    <!-- Dropdown Data Master -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-database"></i> Data Master
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('jenis-hewan.index') }}">
-                                <i class="bi bi-list-ul"></i> Jenis Hewan
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('ras-hewan.index') }}">
-                                <i class="bi bi-tag"></i> Ras Hewan
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('kategori.index') }}">
-                                <i class="bi bi-folder"></i> Kategori
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('kategori-klinis.index') }}">
-                                <i class="bi bi-clipboard-pulse"></i> Kategori Klinis
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('kode-tindakan.index') }}">
-                                <i class="bi bi-file-medical"></i> Kode Tindakan
-                            </a></li>
-                        </ul>
-                    </li>
-                    
-                    <!-- Dropdown Manajemen -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-gear"></i> Manajemen
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('pet.index') }}">
-                                <i class="bi bi-heart"></i> Data Pet
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('pemilik.index') }}">
-                                <i class="bi bi-people"></i> Data Pemilik
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('user.index') }}">
-                                <i class="bi bi-person-badge"></i> Data User
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('role.index') }}">
-                                <i class="bi bi-shield-check"></i> Data Role
-                            </a></li>
-                        </ul>
-                    </li>
-                    
-                    <!-- Logout -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon text-bg-danger shadow-sm">
+                            <i class="bi bi-people-fill"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Total User</span>
+                            <span class="info-box-number">{{ $jumlahUser }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Row-->
+
+            <!--begin::Row - Master Data Statistics-->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Statistik Master Data</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                                    <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                                    <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 col-6">
+                                    <div class="text-center border-end">
+                                        <i class="bi bi-list-ul" style="font-size: 2rem; color: #0d6efd;"></i>
+                                        <h5 class="fw-bold mb-0 mt-2">{{ $jumlahJenis }}</h5>
+                                        <span class="text-uppercase">Jenis Hewan</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="text-center border-end">
+                                        <i class="bi bi-tags-fill" style="font-size: 2rem; color: #198754;"></i>
+                                        <h5 class="fw-bold mb-0 mt-2">{{ $jumlahRas }}</h5>
+                                        <span class="text-uppercase">Ras Hewan</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="text-center border-end">
+                                        <i class="bi bi-journal-medical" style="font-size: 2rem; color: #ffc107;"></i>
+                                        <h5 class="fw-bold mb-0 mt-2">{{ $jumlahTindakan }}</h5>
+                                        <span class="text-uppercase">Kode Tindakan</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="text-center">
+                                        <i class="bi bi-shield-fill" style="font-size: 2rem; color: #dc3545;"></i>
+                                        <h5 class="fw-bold mb-0 mt-2">{{ $jumlahRole }}</h5>
+                                        <span class="text-uppercase">Role</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Row-->
+
+            <!--begin::Row - Quick Stats-->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Ringkasan Data Hewan</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <div class="mb-3">
+                                            <i class="bi bi-heart-fill" style="font-size: 3rem; color: #0d6efd;"></i>
+                                        </div>
+                                        <h4 class="fw-bold mb-0">{{ $jumlahPet }}</h4>
+                                        <p class="text-muted">Total Pet Terdaftar</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <div class="mb-3">
+                                            <i class="bi bi-person-fill" style="font-size: 3rem; color: #198754;"></i>
+                                        </div>
+                                        <h4 class="fw-bold mb-0">{{ $jumlahPemilik }}</h4>
+                                        <p class="text-muted">Total Pemilik</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Rata-rata pet per pemilik:</span>
+                                <span class="fw-bold fs-5">
+                                    @if($jumlahPemilik > 0)
+                                        {{ number_format($jumlahPet / $jumlahPemilik, 1) }}
+                                    @else
+                                        0
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Ringkasan Sistem</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="progress-group mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Total Rekam Medis</span>
+                                    <span class="fw-bold">{{ $jumlahRekam }}</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-primary" style="width: 100%"></div>
+                                </div>
+                            </div>
+
+                            <div class="progress-group mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Jenis Hewan Tersedia</span>
+                                    <span class="fw-bold">{{ $jumlahJenis }}</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" style="width: 80%"></div>
+                                </div>
+                            </div>
+
+                            <div class="progress-group mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Ras Hewan Terdaftar</span>
+                                    <span class="fw-bold">{{ $jumlahRas }}</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" style="width: 90%"></div>
+                                </div>
+                            </div>
+
+                            <div class="progress-group">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>User Aktif</span>
+                                    <span class="fw-bold">{{ $jumlahUser }}</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" style="width: 70%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Row-->
+
+            <!--begin::Row - Quick Access-->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Akses Cepat</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-3">
+                                    <a href="#" class="btn btn-app w-100">
+                                        <i class="bi bi-heart-fill"></i> Pet
                                     </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </form>
-                    </li>
-                </ul>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <a href="#" class="btn btn-app w-100">
+                                        <i class="bi bi-person-fill"></i> Pemilik
+                                    </a>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <a href="#" class="btn btn-app w-100">
+                                        <i class="bi bi-clipboard2-pulse-fill"></i> Rekam Medis
+                                    </a>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <a href="#" class="btn btn-app w-100">
+                                        <i class="bi bi-box-seam-fill"></i> Master Data
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <!--end::Row-->
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero-admin">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h1>Selamat Datang, Admin RSHP 🐾</h1>
-                    <p class="mb-0">
-                        Kelola data hewan, pemilik, serta layanan klinis dengan mudah melalui dashboard ini.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Statistik Section -->
-    <section class="container mb-5">
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="stat-icon">🐶</div>
-                    <div class="stat-title">Jumlah Hewan</div>
-                    <span class="stat-number">{{ $jumlahPet ?? 0 }}</span>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
-                    <div class="stat-title">Jumlah Pemilik</div>
-                    <span class="stat-number">{{ $jumlahPemilik ?? 0 }}</span>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="stat-icon">📋</div>
-                    <div class="stat-title">Jenis Hewan</div>
-                    <span class="stat-number">{{ $jumlahJenis ?? 0 }}</span>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="stat-icon">🩺</div>
-                    <div class="stat-title">Rekam Medis</div>
-                    <span class="stat-number">{{ $jumlahRekam ?? 0 }}</span>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="stat-icon">🏷️</div>
-                    <div class="stat-title">Ras Hewan</div>
-                    <span class="stat-number">{{ $jumlahRas ?? 0 }}</span>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="stat-icon">👨‍💼</div>
-                    <div class="stat-title">Jumlah User</div>
-                    <span class="stat-number">{{ $jumlahUser ?? 0 }}</span>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="stat-icon">🛡️</div>
-                    <div class="stat-title">Jumlah Role</div>
-                    <span class="stat-number">{{ $jumlahRole ?? 0 }}</span>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="stat-icon">💉</div>
-                    <div class="stat-title">Kode Tindakan</div>
-                    <span class="stat-number">{{ $jumlahTindakan ?? 0 }}</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        <!--end::Container-->
+    </div>
+    <!--end::App Content-->
+@endsection
