@@ -6,20 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-// use App\Models\Pemilik;
-// use App\Models\User;
 
 class PemilikController extends Controller
 {
+    // Konstanta untuk Role dan Status
+    const ROLE_PEMILIK = 5;
+    const STATUS_AKTIF = 1;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // Eloquent
-        // $pemiliks = Pemilik::with('user')->get();
-        
-        // Query Builder
         $pemiliks = DB::table('pemilik')
             ->join('user', 'pemilik.iduser', '=', 'user.iduser')
             ->select('pemilik.*', 'user.nama', 'user.email')
@@ -45,7 +43,7 @@ class PemilikController extends Controller
             // Validasi input
             $validatedData = $this->validatePemilik($request);
             
-            // Helper untuk menyimpan data (user + pemilik)
+            // Helper untuk menyimpan data (user + role + pemilik)
             $this->createPemilik($validatedData);
             
             return redirect()->route('pemilik.index')
@@ -62,10 +60,6 @@ class PemilikController extends Controller
     public function show(string $id)
     {
         try {
-            // Eloquent
-            // $pemilik = Pemilik::with(['user', 'pets'])->findOrFail($id);
-            
-            // Query Builder
             $pemilik = DB::table('pemilik')
                 ->join('user', 'pemilik.iduser', '=', 'user.iduser')
                 ->select('pemilik.*', 'user.nama', 'user.email')
@@ -95,10 +89,6 @@ class PemilikController extends Controller
     public function edit(string $id)
     {
         try {
-            // Eloquent
-            // $pemilik = Pemilik::with('user')->findOrFail($id);
-            
-            // Query Builder
             $pemilik = DB::table('pemilik')
                 ->join('user', 'pemilik.iduser', '=', 'user.iduser')
                 ->select('pemilik.*', 'user.nama', 'user.email')
@@ -123,20 +113,6 @@ class PemilikController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            // Eloquent
-            // $pemilik = Pemilik::with('user')->findOrFail($id);
-            // DB::transaction(function () use ($pemilik, $validatedData) {
-            //     $pemilik->user->update([
-            //         'nama' => $validatedData['nama'],
-            //         'email' => $validatedData['email']
-            //     ]);
-            //     $pemilik->update([
-            //         'no_wa' => $this->formatNoWa($validatedData['no_wa']),
-            //         'alamat' => $this->formatAlamat($validatedData['alamat'])
-            //     ]);
-            // });
-            
-            // Query Builder
             // Cek apakah data ada
             $pemilik = DB::table('pemilik')
                 ->where('idpemilik', $id)
@@ -186,19 +162,6 @@ class PemilikController extends Controller
     public function destroy(string $id)
     {
         try {
-            // Eloquent
-            // $pemilik = Pemilik::findOrFail($id);
-            // if ($pemilik->pets()->count() > 0) {
-            //     return redirect()->route('pemilik.index')
-            //                    ->with('error', 'Pemilik tidak dapat dihapus karena masih memiliki hewan peliharaan terdaftar.');
-            // }
-            // DB::transaction(function () use ($pemilik) {
-            //     $iduser = $pemilik->iduser;
-            //     $pemilik->delete();
-            //     User::destroy($iduser);
-            // });
-            
-            // Query Builder
             // Cek apakah data ada
             $pemilik = DB::table('pemilik')
                 ->where('idpemilik', $id)
@@ -219,17 +182,22 @@ class PemilikController extends Controller
                                ->with('error', 'Pemilik tidak dapat dihapus karena masih memiliki hewan peliharaan terdaftar.');
             }
             
-            // Hapus data dalam transaksi (pemilik dulu, baru user)
+            // Hapus data dalam transaksi
             DB::beginTransaction();
             
             $iduser = $pemilik->iduser;
             
-            // Hapus pemilik
+            // 1. Hapus pemilik
             DB::table('pemilik')
                 ->where('idpemilik', $id)
                 ->delete();
             
-            // Hapus user
+            // 2. Hapus role_user (relasi user dengan role)
+            DB::table('role_user')
+                ->where('iduser', $iduser)
+                ->delete();
+            
+            // 3. Hapus user
             DB::table('user')
                 ->where('iduser', $iduser)
                 ->delete();
@@ -268,7 +236,7 @@ class PemilikController extends Controller
             'password' => [
                 'required',
                 'string',
-                'min:8',
+                'min:6',
                 'confirmed'
             ],
             'no_wa' => [
@@ -293,7 +261,7 @@ class PemilikController extends Controller
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah terdaftar.',
             'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 8 karakter.',
+            'password.min' => 'Password minimal 6 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'no_wa.required' => 'Nomor WhatsApp wajib diisi.',
             'no_wa.regex' => 'Nomor WhatsApp hanya boleh berisi angka.',
@@ -355,45 +323,39 @@ class PemilikController extends Controller
     }
 
     /**
-     * Helper untuk membuat pemilik baru (user + pemilik)
+     * Helper untuk membuat pemilik baru (user + role + pemilik)
      */
     protected function createPemilik(array $data)
     {
         try {
-            // Eloquent
-            // return DB::transaction(function () use ($data) {
-            //     $user = User::create([
-            //         'nama' => $this->formatNama($data['nama']),
-            //         'email' => $data['email'],
-            //         'password' => Hash::make($data['password'])
-            //     ]);
-            //     
-            //     return Pemilik::create([
-            //         'no_wa' => $this->formatNoWa($data['no_wa']),
-            //         'alamat' => $this->formatAlamat($data['alamat']),
-            //         'iduser' => $user->iduser
-            //     ]);
-            // });
-            
-            // Query Builder
             DB::beginTransaction();
             
-            // Insert user dulu
-            // Generate iduser baru
-            $maxId = DB::table('user')->max('iduser');
-            $iduser = $maxId ? $maxId + 1 : 1;
-            $iduser = DB::table('user')->insertGetId([
+            // 1. Generate dan insert user
+            $maxUserId = DB::table('user')->max('iduser');
+            $iduser = $maxUserId ? $maxUserId + 1 : 1;
+            
+            DB::table('user')->insert([
                 'iduser' => $iduser,
                 'nama' => $this->formatNama($data['nama']),
                 'email' => $data['email'],
                 'password' => Hash::make($data['password'])
             ]);
             
-            // Generate idpemilik baru
-            $maxId = DB::table('pemilik')->max('idpemilik');
-            $idpemilik = $maxId ? $maxId + 1 : 1;
+            // 2. Insert ke role_user (assign role pemilik)
+            $maxRoleUserId = DB::table('role_user')->max('idrole_user');
+            $idroleUser = $maxRoleUserId ? $maxRoleUserId + 1 : 1;
             
-            // Insert pemilik
+            DB::table('role_user')->insert([
+                'idrole_user' => $idroleUser,
+                'iduser' => $iduser,
+                'idrole' => self::ROLE_PEMILIK,
+                'status' => self::STATUS_AKTIF
+            ]);
+            
+            // 3. Generate dan insert pemilik
+            $maxPemilikId = DB::table('pemilik')->max('idpemilik');
+            $idpemilik = $maxPemilikId ? $maxPemilikId + 1 : 1;
+            
             DB::table('pemilik')->insert([
                 'idpemilik' => $idpemilik,
                 'no_wa' => $this->formatNoWa($data['no_wa']),

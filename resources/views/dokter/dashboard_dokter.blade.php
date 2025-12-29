@@ -1,239 +1,278 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Dokter - RSHP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-        }
+@extends('layouts.lte.dokter.main')
 
-        .hero-dokter {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 70%, #00d2ff 100%);
-            color: white;
-            padding: 4rem 0;
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-dokter::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(0,210,255,0.15) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        
-        .hero-dokter h1 {
-            font-weight: 700;
-            font-size: 2.8rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 2;
-            margin-bottom: 1rem;
-        }
+@section('title', 'Dashboard Dokter')
 
-        .hero-dokter p {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            position: relative;
-            z-index: 2;
-        }
+@section('content')
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">Dashboard Dokter RSHP</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
 
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2.5rem;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(44, 62, 80, 0.1);
-            transition: all 0.3s ease;
-            border: none;
-            position: relative;
-            overflow: hidden;
-            height: 100%;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #2c3e50, #3498db);
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
-        }
-        
-        .stat-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(44, 62, 80, 0.2);
-        }
-        
-        .stat-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            transition: transform 0.4s ease;
-        }
-        
-        .stat-card:hover .stat-icon {
-            transform: scale(1.2) rotate(5deg);
-        }
-        
-        .stat-title {
-            color: #2c3e50;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .stat-number {
-            color: #3498db;
-            font-weight: 800;
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
+<div class="app-content">
+    <div class="container-fluid">
+        <!-- Info boxes -->
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-primary shadow-sm">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Antrian Hari Ini</span>
+                        <span class="info-box-number">{{ $antrianHariIni }}</span>
+                    </div>
+                </div>
+            </div>
 
-        .stat-desc {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-success shadow-sm">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Total Pasien</span>
+                        <span class="info-box-number">{{ $totalPasien }}</span>
+                    </div>
+                </div>
+            </div>
 
-        .welcome-card {
-            background: white;
-            border-radius: 15px;
-            padding: 3rem;
-            box-shadow: 0 5px 15px rgba(44, 62, 80, 0.1);
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .welcome-card h3 {
-            color: #2c3e50;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .welcome-card p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            margin-bottom: 0;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .stat-card {
-            animation: fadeInUp 0.6s ease forwards;
-            opacity: 0;
-        }
-        
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-        .welcome-card {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        @media (max-width: 991.98px) {
-            .hero-dokter h1 {
-                font-size: 2rem;
-            }
-            
-            .stat-card {
-                margin-bottom: 1rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    @include('dokter.partials.navbar')
-
-    <section class="hero-dokter">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-10 mx-auto text-center">
-                    <h1>👨‍⚕️ Selamat Datang, dr. {{ session('user_name') ?? 'Dokter' }}</h1>
-                    <p class="mb-0">
-                        Kelola rekam medis dan tindakan terapi untuk hewan peliharaan dengan profesional
-                    </p>
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-warning shadow-sm">
+                        <i class="bi bi-file-medical-fill"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Rekam Medis</span>
+                        <span class="info-box-number">{{ $jumlahRekamMedis }}</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <section class="container">
-        <div class="welcome-card">
-            <h3>Dashboard Dokter Hewan</h3>
-            <p>Akses menu di atas untuk melihat data rekam medis, tindakan terapi, dan informasi pasien</p>
+        <!-- Antrian Hari Ini -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Antrian Pasien Hari Ini</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                                <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                                <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">No. Urut</th>
+                                        <th style="width: 120px;">Waktu</th>
+                                        <th>Nama Pet</th>
+                                        <th>Pemilik</th>
+                                        <th style="width: 120px;" class="text-center">Status</th>
+                                        <th style="width: 150px;" class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($antrianList as $antrian)
+                                    <tr>
+                                        <td>
+                                            <span class="badge text-bg-primary">{{ $antrian->no_urut }}</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock"></i>
+                                                {{ \Carbon\Carbon::parse($antrian->waktu_daftar)->format('H:i') }}
+                                            </small>
+                                        </td>
+                                        <td><strong>{{ $antrian->nama_pet }}</strong></td>
+                                        <td>
+                                            <span class="text-muted">{{ $antrian->nama_pemilik }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if($antrian->status == 0)
+                                                <span class="badge text-bg-warning">
+                                                    <i class="bi bi-clock-history"></i> Pending
+                                                </span>
+                                            @elseif($antrian->status == 1)
+                                                <span class="badge text-bg-success">
+                                                    <i class="bi bi-check-circle"></i> Selesai
+                                                </span>
+                                            @else
+                                                <span class="badge text-bg-danger">
+                                                    <i class="bi bi-x-circle"></i> Dibatalkan
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{{ route('dokter.pet.index', $antrian->idpet) }}" 
+                                               class="btn btn-info btn-sm"
+                                               data-bs-toggle="tooltip" 
+                                               title="Lihat Detail">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5">
+                                            <div class="text-muted">
+                                                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                                <p class="mt-3">Tidak ada antrian hari ini</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @if(count($antrianList) > 0)
+                    <div class="card-footer clearfix">
+                        <div class="float-end">
+                            <span class="text-muted">Total: <strong>{{ count($antrianList) }}</strong> pasien</span>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
         </div>
-    </section>
 
-    <section class="container mb-5">
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon">📋</div>
-                    <div class="stat-title">Total Rekam Medis</div>
-                    <span class="stat-number">{{ $totalRekamMedis ?? 0 }}</span>
-                    <div class="stat-desc">Semua rekam medis</div>
+        <!-- Quick Stats -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Aktivitas Anda</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <div class="mb-3">
+                                        <i class="bi bi-heart-pulse" style="font-size: 3rem; color: #0d6efd;"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-0">{{ $totalPasien }}</h4>
+                                    <p class="text-muted">Pasien Ditangani</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <div class="mb-3">
+                                        <i class="bi bi-file-medical" style="font-size: 3rem; color: #198754;"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-0">{{ $jumlahRekamMedis }}</h4>
+                                    <p class="text-muted">Rekam Medis</p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Antrian hari ini:</span>
+                            <span class="fw-bold fs-5">{{ $antrianHariIni }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon">🩺</div>
-                    <div class="stat-title">Tindakan Hari Ini</div>
-                    <span class="stat-number">{{ $tindakanHariIni ?? 0 }}</span>
-                    <div class="stat-desc">Pemeriksaan hari ini</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon">🐾</div>
-                    <div class="stat-title">Pasien Aktif</div>
-                    <span class="stat-number">{{ $pasienAktif ?? 0 }}</span>
-                    <div class="stat-desc">Dalam perawatan</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon">💊</div>
-                    <div class="stat-title">Terapi Berjalan</div>
-                    <span class="stat-number">{{ $terapiBerjalan ?? 0 }}</span>
-                    <div class="stat-desc">Sedang dijalankan</div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Statistik</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress-group mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Antrian Hari Ini</span>
+                                <span class="fw-bold">{{ $antrianHariIni }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" style="width: 100%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-group mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Total Pasien</span>
+                                <span class="fw-bold">{{ $totalPasien }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: 90%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-group">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Rekam Medis Dibuat</span>
+                                <span class="fw-bold">{{ $jumlahRekamMedis }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        <!-- Quick Access -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Akses Cepat</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="{{ route('dokter.pet.index') }}" class="btn btn-app w-100">
+                                    <i class="bi bi-heart-pulse-fill"></i> Data Pasien
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="{{ route('dokter.rekam-medis.index') }}" class="btn btn-app w-100">
+                                    <i class="bi bi-clipboard-data-fill"></i> Rekam Medis
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="{{ route('dokter.rekam-medis.show', $rm->idrekam_medis) }}" class="btn btn-app w-100">
+                                    <i class="bi bi-file-earmark-plus-fill"></i> Buat Detail
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="{{ route('dokter.profile.index') }}" class="btn btn-app w-100">
+                                    <i class="bi bi-person-circle"></i> Profil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+@endpush
+@endsection

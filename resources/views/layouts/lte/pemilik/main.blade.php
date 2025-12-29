@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <!--begin::Head-->
-    @include('layouts.lte.head')
+    @include('layouts.lte.pemilik.head')
     <!--end::Head-->
     <!--begin::Body-->
     <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
@@ -10,7 +10,7 @@
             @include('layouts.lte.navbar')
             <!--end::Navbar-->
             <!--begin::Sidebar-->
-            @include('layouts.lte.sidebar')
+            @include('layouts.lte.pemilik.sidebar')
             <!--end::Sidebar-->
             <!--begin::App Main-->
             <main class="app-main">

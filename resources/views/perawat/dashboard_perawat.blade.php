@@ -1,230 +1,259 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Perawat - RSHP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-        }
+@extends('layouts.lte.perawat.main')
 
-        .hero-perawat {
-            background: linear-gradient(135deg, #16a085 0%, #1abc9c 70%, #7bed9f 100%);
-            color: white;
-            padding: 4rem 0;
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-perawat::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(123,237,159,0.15) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        
-        .hero-perawat h1 {
-            font-weight: 700;
-            font-size: 2.8rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 2;
-            margin-bottom: 1rem;
-        }
+@section('title', 'Dashboard Perawat')
 
-        .hero-perawat p {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            position: relative;
-            z-index: 2;
-        }
+@section('content')
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">Dashboard Perawat RSHP</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
 
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2.5rem;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(22, 160, 133, 0.1);
-            transition: all 0.3s ease;
-            border: none;
-            position: relative;
-            overflow: hidden;
-            height: 100%;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #16a085, #1abc9c);
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
-        }
-        
-        .stat-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(22, 160, 133, 0.2);
-        }
-        
-        .stat-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            transition: transform 0.4s ease;
-        }
-        
-        .stat-card:hover .stat-icon {
-            transform: scale(1.2) rotate(5deg);
-        }
-        
-        .stat-title {
-            color: #16a085;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .stat-number {
-            color: #1abc9c;
-            font-weight: 800;
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
+<div class="app-content">
+    <div class="container-fluid">
+        <!-- Info boxes -->
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-primary shadow-sm">
+                        <i class="bi bi-heart-fill"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Total Pasien</span>
+                        <span class="info-box-number">{{ $jumlahPasien }}</span>
+                    </div>
+                </div>
+            </div>
 
-        .stat-desc {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-success shadow-sm">
+                        <i class="bi bi-clipboard2-pulse-fill"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Rekam Medis</span>
+                        <span class="info-box-number">{{ $jumlahRekamMedis }}</span>
+                    </div>
+                </div>
+            </div>
 
-        .welcome-card {
-            background: white;
-            border-radius: 15px;
-            padding: 3rem;
-            box-shadow: 0 5px 15px rgba(22, 160, 133, 0.1);
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .welcome-card h3 {
-            color: #16a085;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .welcome-card p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            margin-bottom: 0;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .stat-card {
-            animation: fadeInUp 0.6s ease forwards;
-            opacity: 0;
-        }
-        
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-
-        .welcome-card {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        @media (max-width: 991.98px) {
-            .hero-perawat h1 {
-                font-size: 2rem;
-            }
-            
-            .stat-card {
-                margin-bottom: 1rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    @include('perawat.partials.navbar')
-
-    <section class="hero-perawat">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-10 mx-auto text-center">
-                    <h1>👩‍⚕️ Selamat Datang, {{ session('user_name') ?? 'Perawat' }}</h1>
-                    <p class="mb-0">
-                        Kelola kategori klinis dan bantu proses perawatan hewan dengan teliti
-                    </p>
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon text-bg-warning shadow-sm">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Jadwal Hari Ini</span>
+                        <span class="info-box-number">{{ $jadwalHariIni }}</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <section class="container">
-        <div class="welcome-card">
-            <h3>Dashboard Perawat</h3>
-            <p>Akses menu di atas untuk mengelola kategori, kategori klinis, dan kode tindakan terapi</p>
+        <!-- Rekam Medis Terbaru -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Rekam Medis Terbaru</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                                <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                                <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 120px;">Tanggal</th>
+                                        <th>Nama Pet</th>
+                                        <th>Pemilik</th>
+                                        <th>Dokter</th>
+                                        <th>Diagnosa</th>
+                                        <th style="width: 150px;" class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($rekamMedisList as $rekam)
+                                    <tr>
+                                        <td>
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar"></i>
+                                                {{ \Carbon\Carbon::parse($rekam->created_at)->format('d M Y') }}
+                                            </small>
+                                        </td>
+                                        <td><strong>{{ $rekam->nama_pet }}</strong></td>
+                                        <td>
+                                            <span class="text-muted">{{ $rekam->nama_pemilik }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge text-bg-info">
+                                                <i class="bi bi-person-badge"></i>
+                                                {{ $rekam->nama_dokter ?? 'Tidak ada' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ Str::limit($rekam->diagnosa, 40) }}</td>
+                                        <td class="text-center">
+                                            <a href="{{ route('perawat.rekam-medis.show', $rekam->idrekam_medis) }}" 
+                                            class="btn btn-info btn-sm"
+                                            data-bs-toggle="tooltip" 
+                                            title="Lihat Detail">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5">
+                                            <div class="text-muted">
+                                                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                                <p class="mt-3">Belum ada rekam medis</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </div>
         </div>
-    </section>
 
-    <section class="container mb-5">
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-4 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon">📂</div>
-                    <div class="stat-title">Total Kategori</div>
-                    <span class="stat-number">{{ $totalKategori ?? 0 }}</span>
-                    <div class="stat-desc">Kategori hewan</div>
+        <!-- Quick Stats -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Ringkasan Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <div class="mb-3">
+                                        <i class="bi bi-heart-pulse" style="font-size: 3rem; color: #0d6efd;"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-0">{{ $jumlahPasien }}</h4>
+                                    <p class="text-muted">Total Pasien</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <div class="mb-3">
+                                        <i class="bi bi-clipboard-data" style="font-size: 3rem; color: #198754;"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-0">{{ $jumlahRekamMedis }}</h4>
+                                    <p class="text-muted">Rekam Medis</p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Jadwal hari ini:</span>
+                            <span class="fw-bold fs-5">{{ $jadwalHariIni }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon">🏥</div>
-                    <div class="stat-title">Kategori Klinis</div>
-                    <span class="stat-number">{{ $totalKategoriKlinis ?? 0 }}</span>
-                    <div class="stat-desc">Jenis layanan</div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon">💉</div>
-                    <div class="stat-title">Tindakan Tersedia</div>
-                    <span class="stat-number">{{ $totalTindakan ?? 0 }}</span>
-                    <div class="stat-desc">Kode tindakan terapi</div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Statistik</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress-group mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Total Pasien Terdaftar</span>
+                                <span class="fw-bold">{{ $jumlahPasien }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" style="width: 100%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-group mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Rekam Medis Dibuat</span>
+                                <span class="fw-bold">{{ $jumlahRekamMedis }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: 85%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-group">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Jadwal Hari Ini</span>
+                                <span class="fw-bold">{{ $jadwalHariIni }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        <!-- Quick Access -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Akses Cepat</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="{{ route('perawat.pet.index') }}" class="btn btn-app w-100">
+                                    <i class="bi bi-heart-pulse-fill"></i> Data Pasien
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="{{ route('perawat.rekam-medis.create') }}" class="btn btn-app w-100">
+                                    <i class="bi bi-file-earmark-plus-fill"></i> Buat Rekam
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="{{ route('perawat.rekam-medis.index') }}" class="btn btn-app w-100">
+                                    <i class="bi bi-clipboard-data-fill"></i> Rekam Medis
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <a href="{{ route('perawat.profile.index') }}" class="btn btn-app w-100">
+                                    <i class="bi bi-person-circle"></i> Profil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+@endpush
+@endsection

@@ -97,6 +97,49 @@
                     </a>
                 </li>
 
+                <!-- Dokter -->
+                <li class="nav-item">
+                    <a href="{{ route('dokter.index') }}" class="nav-link">
+                        <i class="nav-icon bi bi-person-badge-fill"></i>
+                        <p>Dokter</p>
+                    </a>
+                </li>
+
+                <!-- Perawat -->
+                <li class="nav-item">
+                    <a href="{{ route('perawat.index') }}" class="nav-link">
+                        <i class="nav-icon bi bi-clipboard2-pulse-fill"></i>
+                        <p>Perawat</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">TRANSAKSI</li>
+
+                <!-- Transaksi -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon bi bi-journal-medical"></i>
+                        <p>
+                            Transaksi
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('rekam-medis.index') }}" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Rekam Medis</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('temu-dokter.index') }}" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Temu Dokter</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="nav-header">MANAJEMEN USER</li>
 
                 <!-- User -->
@@ -127,7 +170,7 @@
 
                 <!-- Logout -->
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="nav-icon bi bi-box-arrow-right"></i>
                         <p>Logout</p>
                     </a>
@@ -139,3 +182,7 @@
     <!--end::Sidebar Wrapper-->
 </aside>
 <!--end::Sidebar-->
+
+<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>

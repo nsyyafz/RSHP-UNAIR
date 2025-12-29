@@ -3,63 +3,42 @@
 namespace App\Http\Controllers\Pemilik;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DashboardPemilikController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('pemilik.dashboard_pemilik');
-    }
+        $iduser = Auth::id();
+        
+        // Ambil data pemilik
+        $pemilik = DB::table('pemilik')->where('iduser', $iduser)->first();
+        
+        if (!$pemilik) {
+            return redirect()->route('login')->with('error', 'Data pemilik tidak ditemukan');
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        // Hitung total pet
+        $totalPet = DB::table('pet')->where('idpemilik', $pemilik->idpemilik)->count();
+        
+        // Hitung temu dokter menunggu
+        $temuMenunggu = DB::table('temu_dokter')
+            ->join('pet', 'temu_dokter.idpet', '=', 'pet.idpet')
+            ->where('pet.idpemilik', $pemilik->idpemilik)
+            ->where('temu_dokter.status', '0')
+            ->count();
+        
+        // Hitung total rekam medis
+        $totalRekamMedis = DB::table('rekam_medis')
+            ->join('pet', 'rekam_medis.idpet', '=', 'pet.idpet')
+            ->where('pet.idpemilik', $pemilik->idpemilik)
+            ->count();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('pemilik.dashboard_pemilik', compact(
+            'totalPet',
+            'temuMenunggu',
+            'totalRekamMedis'
+        ));
     }
 }

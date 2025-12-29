@@ -1,4 +1,4 @@
-@extends('layouts.lte.main')
+@extends('layouts.lte.admin.main')
 @section('title', 'Tambah Ras Hewan')
 @section('content')
 <div class="app-content-header">

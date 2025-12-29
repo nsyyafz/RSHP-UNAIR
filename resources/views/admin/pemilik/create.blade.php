@@ -1,4 +1,4 @@
-@extends('layouts.lte.main')
+@extends('layouts.lte.admin.main')
 
 @section('title', 'Tambah Pemilik')
 
@@ -99,12 +99,12 @@
                                        class="form-control @error('password') is-invalid @enderror" 
                                        id="password" 
                                        name="password" 
-                                       placeholder="Minimal 8 karakter" 
+                                       placeholder="Minimal 6 karakter" 
                                        required>
                                 @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="text-muted">Minimal 8 karakter</small>
+                                <small class="text-muted">Minimal 6 karakter</small>
                             </div>
 
                             <!-- Konfirmasi Password -->

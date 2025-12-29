@@ -22,9 +22,8 @@ class IsPemilik
         // Ambil role dari session
         $userRole = session('user_role');
 
-        // User tanpa role khusus (bukan 1,2,3,4) dianggap sebagai pemilik
-        // Jika tidak ada role atau role selain 1,2,3,4, maka dianggap pemilik
-        if (empty($userRole) || !in_array($userRole, [1, 2, 3, 4])) {
+        // Cek apakah role adalah 5 (Pemilik)
+        if ($userRole === 5) {
             return $next($request);
         } else {
             return back()->with('error', 'Akses ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.');

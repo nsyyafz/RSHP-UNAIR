@@ -1,4 +1,4 @@
-@extends('layouts.lte.main')
+@extends('layouts.lte.admin.main')
 
 @section('content')
     <!--begin::App Content Header-->

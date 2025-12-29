@@ -10,6 +10,7 @@ use App\Models\RasHewan;
 use App\Models\JenisHewan;
 use App\Models\RekamMedis;
 use App\Models\KodeTindakan;
+use App\Models\TemuDokter;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -29,6 +30,7 @@ class DashboardAdminController extends Controller
         'jumlahUser' => User::count(),
         'jumlahRole' => Role::count(),
         'jumlahTindakan' => KodeTindakan::count(),
+        'jumlahTemuDokter' => TemuDokter::count(),
     ]);
     }   
 
